@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+      .edit-canvas-container {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #myCanvas {
+        width: 100%;
+        height: auto;
+        max-width: 1000px;
+        max-height: 1000px;
+      }
+      .floating-window {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 400px;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        z-index: 1000;
+        cursor: move;
+      }
+      .floating-window-header {
+        background: #3284ff;
+        color: white;
+        padding: 10px;
+        cursor: move;
+        border-radius: 5px 5px 0 0;
+      }
+      .floating-window-body {
+        padding: 10px;
+      }
+      .floating-window table {
+        width: 100%;
+      }
+      .floating-window table input[type="text"],
+      .floating-window table input[type="file"],
+      .floating-window table input[type="color"] {
+        width: 100%;
+        padding: 5px;
+        margin: 5px 0;
+        border: 1px solid #3284ff;
+        border-radius: 3px;
+        font-size: 1rem;
+      }
+      .download-button {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background-color: #3284ff;
+        color: #ffffff;
+        font-size: 1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="edit-canvas-container">
+      <canvas id="myCanvas" width="1000" height="1000"></canvas>
+    </div>
+    <div class="floating-window" id="floatingWindow">
+      <div class="floating-window-header" id="floatingWindowHeader">
+        Customize
+      </div>
+      <div class="floating-window-body">
+        <table>
+          <tr>
+            <td><label for="mainText">Main Title:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Main Title is Here"
+                id="mainText"
+                name="mainText"
+                maxlength="50"
+                value="Main Title is Here"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="secondaryText">Secondary Text:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Secondary text is here"
+                id="secondaryText"
+                name="secondaryText"
+                maxlength="50"
+                value="Secondary text is here"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="fourthText">Fourth Text:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Fourth text is here"
+                id="fourthText"
+                name="fourthText"
+                maxlength="50"
+                value="Fourth text is here"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="bottomText">Bottom Text:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Powered by ABC Company"
+                id="bottomText"
+                name="bottomText"
+                maxlength="50"
+                value="Powered by ABC Company"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="backgroundColor">Background Color:</label></td>
+            <td>
+              <input
+                type="color"
+                id="backgroundColor"
+                name="backgroundColor"
+                value="#ed324f"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="topLogoUpload">Upload Top Logo:</label></td>
+            <td>
+              <input
+                type="file"
+                id="topLogoUpload"
+                name="topLogoUpload"
+                accept="image/*"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="imageURL">Image URL:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Enter image URL"
+                id="imageURL"
+                name="imageURL"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="imageUpload">Upload Image:</label></td>
+            <td>
+              <input
+                type="file"
+                id="imageUpload"
+                name="imageUpload"
+                accept="image/*"
+              />
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <button class="download-button" id="downloadBtn">Download</button>
+
+    <script>
+      // Paths to the uploaded image and the logo
+      var imagePath = "/mnt/data/Sri Lankan Cuisine - Copy.jpg";
+      var uploadedTopLogo = null;
+      var uploadedImage = null;
+
+      // Function to draw content on the canvas
+      function drawOnCanvas(
+        mainText = "Main Title is Here",
+        secondaryText = "Secondary text is here",
+        fourthText = "Fourth text is here",
+        bottomText = "Powered by ABC Company",
+        backgroundColor = "#ed324f"
+      ) {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        // Set the background color
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw the white box at the top, horizontally centered with rounded bottom corners
+        var boxWidth = 300;
+        var boxHeight = 100;
+        var boxX = (canvas.width - boxWidth) / 2; // Center horizontally
+        var boxY = 0; // Position the box at the top
+
+        // Draw rounded rectangle for the white box
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.moveTo(boxX, boxY);
+        ctx.lineTo(boxX + boxWidth, boxY);
+        ctx.lineTo(boxX + boxWidth, boxY + boxHeight - 20);
+        ctx.quadraticCurveTo(
+          boxX + boxWidth,
+          boxY + boxHeight,
+          boxX + boxWidth - 20,
+          boxY + boxHeight
+        );
+        ctx.lineTo(boxX + 20, boxY + boxHeight);
+        ctx.quadraticCurveTo(
+          boxX,
+          boxY + boxHeight,
+          boxX,
+          boxY + boxHeight - 20
+        );
+        ctx.lineTo(boxX, boxY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Load and draw the uploaded logo inside the white box
+        var topLogo = new Image();
+        if (uploadedTopLogo) {
+          topLogo.src = URL.createObjectURL(uploadedTopLogo);
+        }
+
+        topLogo.onload = function () {
+          var logoHeight = 60; // Logo height
+          var logoWidth = topLogo.width * (logoHeight / topLogo.height); // Maintain aspect ratio
+          var logoX = boxX + (boxWidth - logoWidth) / 2; // Center horizontally within the box
+          var logoY = boxY + 20; // 20px space from the top of the white box
+
+          ctx.drawImage(topLogo, logoX, logoY, logoWidth, logoHeight);
+        };
+
+        // Draw the main text 200px from the top
+        if (mainText) {
+          ctx.font = "bold 80px Arial";
+          ctx.fillStyle = "#ffffff"; // White text color
+          ctx.textAlign = "center";
+          ctx.fillText(mainText, canvas.width / 2, 200);
+        }
+
+        // Draw the secondary text 280px from the top
+        if (secondaryText) {
+          ctx.font = "500 65px Arial"; // Medium font weight for secondary text
+          ctx.fillStyle = "#ffffff"; // White text color
+          ctx.textAlign = "center";
+          ctx.fillText(secondaryText, canvas.width / 2, 280);
+        }
+
+        // Draw a white full-width box at 800px from the top with a height of 165px
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 800, canvas.width, 165);
+
+        // Draw the fourth text 925px from the top
+        if (fourthText) {
+          ctx.font = "600 45px Arial"; // Semi-bold font weight with 45px font size
+          ctx.fillStyle = backgroundColor; // Use the background color for the text
+          ctx.textAlign = "center";
+          ctx.fillText(fourthText, canvas.width / 2, 925);
+        }
+
+        // Draw the bottom text 986px from the top
+        if (bottomText) {
+          ctx.font = "normal 18px Arial";
+          ctx.fillStyle = "#ffffff"; // White text color
+          ctx.textAlign = "center";
+          ctx.fillText(bottomText, canvas.width / 2, 986);
+        }
+
+        // Add a small drop shadow to the circle
+        ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetX = 5;
+        ctx.shadowOffsetY = 5;
+
+        // Draw a white circle with 520x520 size, 320px from the top
+        var circleSize = 520;
+        var circleX = (canvas.width - circleSize) / 2;
+        var circleY = 320;
+
+        ctx.beginPath();
+        ctx.arc(
+          circleX + circleSize / 2,
+          circleY + circleSize / 2,
+          circleSize / 2,
+          0,
+          2 * Math.PI,
+          false
+        );
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+
+        // Reset shadow settings after drawing the circle
+        ctx.shadowColor = "transparent";
+
+        // Draw the uploaded image or image from URL inside the circle
+        var img = new Image();
+        if (uploadedImage) {
+          img.src = URL.createObjectURL(uploadedImage);
+        } else {
+          var imageURL = document.getElementById("imageURL").value;
+          if (imageURL) {
+            img.src = imageURL;
+          }
+        }
+
+        img.onload = function () {
+          // Clip the image to fit within the circle
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(
+            circleX + circleSize / 2,
+            circleY + circleSize / 2,
+            circleSize / 2,
+            0,
+            2 * Math.PI,
+            false
+          );
+          ctx.clip();
+
+          // Draw the image within the circle
+          ctx.drawImage(img, circleX, circleY, circleSize, circleSize);
+
+          // Restore the context to remove the clipping region
+          ctx.restore();
+        };
+      }
+
+      // Function to handle the input in the text fields and sync them with the canvas
+      function syncTextWithCanvas() {
+        var mainText = document.getElementById("mainText").value;
+        var secondaryText = document.getElementById("secondaryText").value;
+        var fourthText = document.getElementById("fourthText").value;
+        var bottomText = document.getElementById("bottomText").value;
+        var backgroundColor = document.getElementById("backgroundColor").value;
+        drawOnCanvas(
+          mainText,
+          secondaryText,
+          fourthText,
+          bottomText,
+          backgroundColor
+        );
+      }
+
+      // Function to handle the image uploads and sync them with the canvas
+      function handleTopLogoUpload(event) {
+        uploadedTopLogo = event.target.files[0];
+        syncTextWithCanvas(); // Redraw the canvas with the uploaded top logo
+      }
+
+      function handleImageUpload(event) {
+        uploadedImage = event.target.files[0];
+        syncTextWithCanvas(); // Redraw the canvas with the uploaded image
+      }
+
+      // Function to download the canvas image as PNG or JPG
+      function downloadImage() {
+        let canvas = document.getElementById("myCanvas");
+        let format = "png"; // Default to PNG, change this to "jpg" if needed
+        let mimeType = `image/${format === "jpg" ? "jpeg" : format}`;
+        let dataURL = canvas.toDataURL(mimeType);
+
+        let a = document.createElement("a");
+        a.href = dataURL;
+        a.download = `image.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      // Initial draw on load
+      window.addEventListener("load", () => drawOnCanvas());
+
+      // Attach the input event to sync the text automatically
+      let mainTextInput = document.getElementById("mainText");
+      let secondaryTextInput = document.getElementById("secondaryText");
+      let fourthTextInput = document.getElementById("fourthText");
+      let bottomTextInput = document.getElementById("bottomText");
+      let backgroundColorInput = document.getElementById("backgroundColor");
+      mainTextInput.addEventListener("input", syncTextWithCanvas);
+      secondaryTextInput.addEventListener("input", syncTextWithCanvas);
+      fourthTextInput.addEventListener("input", syncTextWithCanvas);
+      bottomTextInput.addEventListener("input", syncTextWithCanvas);
+      backgroundColorInput.addEventListener("input", syncTextWithCanvas);
+
+      // Attach the image upload functionality
+      let topLogoUploadInput = document.getElementById("topLogoUpload");
+      topLogoUploadInput.addEventListener("change", handleTopLogoUpload);
+
+      let imageUploadInput = document.getElementById("imageUpload");
+      imageUploadInput.addEventListener("change", handleImageUpload);
+
+      // Attach the download functionality
+      let downloadBtn = document.getElementById("downloadBtn");
+      downloadBtn.addEventListener("click", downloadImage);
+
+      // Drag and Drop functionality for the floating window
+      dragElement(document.getElementById("floatingWindow"));
+
+      function dragElement(elmnt) {
+        var pos1 = 0,
+          pos2 = 0,
+          pos3 = 0,
+          pos4 = 0;
+        if (document.getElementById(elmnt.id + "Header")) {
+          /* if present, the header is where you move the DIV from:*/
+          document.getElementById(elmnt.id + "Header").onmousedown =
+            dragMouseDown;
+        } else {
+          /* otherwise, move the DIV from anywhere inside the DIV:*/
+          elmnt.onmousedown = dragMouseDown;
+        }
+
+        function dragMouseDown(e) {
+          e = e || window.event;
+          e.preventDefault();
+          // get the mouse cursor position at startup:
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          document.onmouseup = closeDragElement;
+          // call a function whenever the cursor moves:
+          document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+          e = e || window.event;
+          e.preventDefault();
+          // calculate the new cursor position:
+          pos1 = pos3 - e.clientX;
+          pos2 = pos4 - e.clientY;
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          // set the element's new position:
+          elmnt.style.top = elmnt.offsetTop - pos2 + "px";
+          elmnt.style.left = elmnt.offsetLeft - pos1 + "px";
+        }
+
+        function closeDragElement() {
+          /* stop moving when mouse button is released:*/
+          document.onmouseup = null;
+          document.onmousemove = null;
+        }
+      }
+    </script>
+  </body>
+</html>

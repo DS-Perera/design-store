@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: "Raleway", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        width: 1280px;
+        height: 720px;
+        position: relative;
+      }
+
+      #myCanvas {
+        width: 100%;
+        height: 100%;
+        background-color: #f5f5f5; /* Light background for better contrast */
+      }
+
+      .tagline {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        text-align: center;
+        color: #ffffff;
+        font-size: 3rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+      }
+
+      .secondary-tagline {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        text-align: center;
+        color: #ffffff;
+        font-size: 2rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+      }
+
+      .logo {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 150px;
+        height: auto;
+      }
+
+      .promo {
+        position: absolute;
+        bottom: 60px;
+        left: 20px;
+        color: #ffffff;
+        font-size: 2rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+      }
+
+      .qr-code {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 100px;
+        height: auto;
+      }
+
+      .powered-by {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #ffffff;
+        font-size: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+      }
+    </style>
+    <link rel="preload" href="/static/fonts.css" as="style" />
+    <link rel="stylesheet" href="/static/fonts.css" />
+  </head>
+  <body>
+    <canvas id="myCanvas" width="1280" height="720"></canvas>
+    <div class="tagline" id="mainTagline">Labor Day Extravaganza!</div>
+    <div class="secondary-tagline" id="secondaryTagline">
+      Enjoy 15% off everything!
+    </div>
+    <img
+      src="https://applova-sys-i1.s3.amazonaws.com/images/65_36962431/business/brand-logo.png?time=1712141809620"
+      class="logo"
+      id="logo"
+      alt="Business Logo"
+    />
+    <div class="promo" id="promoCode">Promo Code: LABORDAY2024</div>
+    <img src="/static/qrcode.png" class="qr-code" id="qrCode" alt="QR Code" />
+    <div class="powered-by">Powered by Applova</div>
+    <script>
+      function createThumbnail() {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        // Set up background gradient
+        var gradient = ctx.createLinearGradient(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+        gradient.addColorStop(0, "#ff8c00");
+        gradient.addColorStop(1, "#ffcc00");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw semi-transparent overlay
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw the text
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 72px Montserrat";
+        ctx.textAlign = "center";
+        ctx.fillText(
+          "Labor Day Extravaganza!",
+          canvas.width / 2,
+          canvas.height / 2 - 50
+        );
+
+        ctx.font = "40px Raleway";
+        ctx.fillText(
+          "Enjoy 15% off everything!",
+          canvas.width / 2,
+          canvas.height / 2 + 50
+        );
+
+        ctx.font = "30px Montserrat";
+        ctx.fillText(
+          "Promo Code: LABORDAY2024",
+          canvas.width / 2,
+          canvas.height / 2 + 120
+        );
+      }
+
+      window.onload = function () {
+        createThumbnail();
+      };
+    </script>
+  </body>
+</html>

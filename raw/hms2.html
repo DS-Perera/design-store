@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: "Raleway", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+      .edit-canvas-container {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .edit-canvas {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #myCanvas {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        height: auto;
+        max-width: 800px;
+        max-height: 800px;
+      }
+      .floating-window {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 300px;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        z-index: 1000;
+        cursor: move;
+      }
+      .floating-window-header {
+        background: #3284ff;
+        color: white;
+        padding: 10px;
+        cursor: move;
+        border-radius: 5px 5px 0 0;
+      }
+      .floating-window-body {
+        padding: 10px;
+      }
+      .floating-window table {
+        width: 100%;
+      }
+      .floating-window table input[type="text"],
+      .floating-window table input[type="color"],
+      .floating-window table input[type="file"],
+      .floating-window table input[type="number"] {
+        width: 100%;
+        padding: 5px;
+        margin: 5px 0;
+        border: 1px solid #3284ff;
+        border-radius: 3px;
+        font-size: 1rem;
+      }
+      .floating-window table input[type="color"] {
+        padding: 0;
+        height: 30px;
+      }
+      .preview-footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .download {
+        padding: 10px 20px;
+        border-radius: 100px;
+        border: none;
+        background-color: #3284ff;
+        color: #ffffff;
+        font-weight: 400;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+    </style>
+    <link rel="preload" href="/static/fonts.css" as="style" />
+    <link rel="stylesheet" href="/static/fonts.css" />
+  </head>
+  <body>
+    <div class="edit-canvas-container">
+      <div class="edit-canvas">
+        <canvas id="myCanvas" width="800" height="800"></canvas>
+      </div>
+    </div>
+    <div class="floating-window" id="floatingWindow">
+      <div class="floating-window-header" id="floatingWindowHeader">
+        Customize
+      </div>
+      <div class="floating-window-body">
+        <table>
+          <tr>
+            <td><label for="tagline01">Tagline 01:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="No More Waiting"
+                id="tagline01"
+                name="tagline01"
+                value="No More Waiting"
+                maxlength="30"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="tagline01FontSize">Tagline 01 Font Size:</label>
+            </td>
+            <td>
+              <input
+                type="number"
+                id="tagline01FontSize"
+                name="tagline01FontSize"
+                value="80"
+                min="10"
+                max="200"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="tagline02">Tagline 02:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Order, Pick Up & Save!"
+                id="tagline02"
+                name="tagline02"
+                value="Order, Pick Up & Save!"
+                maxlength="55"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="tagline02FontSize">Tagline 02 Font Size:</label>
+            </td>
+            <td>
+              <input
+                type="number"
+                id="tagline02FontSize"
+                name="tagline02FontSize"
+                value="56"
+                min="10"
+                max="200"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="tagline03">Placeholder Text:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Order & Pick Up Now!"
+                id="tagline03"
+                name="tagline03"
+                value="Order & Pick Up Now!"
+                maxlength="55"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="imageURL">Image URL:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Enter image URL"
+                id="imageURL"
+                name="imageURL"
+                value=""
+                maxlength="255"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="logoURL">Logo URL:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Enter logo URL"
+                id="logoURL"
+                name="logoURL"
+                value="https://appigo.co/assets/images/common/appigo-logo-color.png"
+                maxlength="255"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="imageFile">Upload Image:</label></td>
+            <td>
+              <input
+                type="file"
+                id="imageFile"
+                name="imageFile"
+                accept="image/*"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="bgColor">Background Color:</label></td>
+            <td>
+              <input
+                type="color"
+                id="bgColor"
+                name="bgColor"
+                value="#ff000040"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="bannerColor">Banner Color:</label></td>
+            <td>
+              <input
+                type="color"
+                id="bannerColor"
+                name="bannerColor"
+                value="#F2F2F2"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="textColor">Text Color:</label></td>
+            <td>
+              <input
+                type="color"
+                id="textColor"
+                name="textColor"
+                value="#000000"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="tagline01Y">Tagline 01 Y Pos:</label></td>
+            <td>
+              <input
+                type="number"
+                id="tagline01Y"
+                name="tagline01Y"
+                value="200"
+                min="0"
+                max="800"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="tagline02Y">Tagline 02 Y Pos:</label></td>
+            <td>
+              <input
+                type="number"
+                id="tagline02Y"
+                name="tagline02Y"
+                value="270"
+                min="0"
+                max="800"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="boxY">Box Y Pos:</label></td>
+            <td>
+              <input
+                type="number"
+                id="boxY"
+                name="boxY"
+                value="290"
+                min="0"
+                max="800"
+              />
+            </td>
+          </tr>
+        </table>
+        <label for="formatSelect">Select Format:</label>
+        <select id="formatSelect">
+          <option value="png">PNG</option>
+          <option value="jpg">JPG</option>
+        </select>
+        <button class="download" id="downloadBtn">Download</button>
+      </div>
+    </div>
+    <script>
+      var main_tagline = "No More Waiting";
+      var secondary_tagline = "Order, Pick Up & Save!";
+      var placeholder_text = "Order & Pick Up Now!";
+      var image_url = "";
+      var logo_url =
+        "https://appigo.co/assets/images/common/appigo-logo-color.png";
+      var bgColor = "#ff000040";
+      var bannerColor = "#F2F2F2";
+      var textColor = "#000000";
+      var uploadedImage = null;
+      function downloadImage() {
+        let canvas_d = document.getElementById("myCanvas");
+        let format = document.getElementById("formatSelect").value;
+        let mimeType = `image/${format === "jpg" ? "jpeg" : format}`;
+
+        // Convert the canvas to a data URL in the desired format
+        let dataURL = canvas_d.toDataURL(mimeType);
+
+        // Create a temporary anchor element for the download
+        let a = document.createElement("a");
+        a.href = dataURL;
+        a.download = `thumbnail.${format}`;
+        document.body.appendChild(a); // Append to body to ensure it works in all browsers
+        a.click(); // Trigger the download
+        document.body.removeChild(a); // Remove the element after triggering the download
+      }
+
+      var createFlyer12 = () => {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        // Get the current values from the input fields
+        main_tagline = document.getElementById("tagline01").value;
+        var tagline01FontSize = parseInt(
+          document.getElementById("tagline01FontSize").value
+        );
+        secondary_tagline = document.getElementById("tagline02").value;
+        var tagline02FontSize = parseInt(
+          document.getElementById("tagline02FontSize").value
+        );
+        placeholder_text = document.getElementById("tagline03").value;
+        image_url = document.getElementById("imageURL").value;
+        logo_url = document.getElementById("logoURL").value;
+        bgColor = document.getElementById("bgColor").value;
+        bannerColor = document.getElementById("bannerColor").value;
+        textColor = document.getElementById("textColor").value;
+
+        var tagline01Y = parseInt(document.getElementById("tagline01Y").value);
+        var tagline02Y = parseInt(document.getElementById("tagline02Y").value);
+        var boxY = parseInt(document.getElementById("boxY").value);
+
+        // Draw background
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw the top image with a mask
+        var image = new Image();
+        if (uploadedImage) {
+          image.src = URL.createObjectURL(uploadedImage);
+        } else {
+          image.src = image_url;
+        }
+
+        image.onload = function () {
+          var clipHeight = canvas.height / 2;
+          var scaledWidth = 1000;
+          var scaledHeight = image.height * (scaledWidth / image.width);
+
+          // Define the clipping region
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(0, 0, canvas.width, clipHeight);
+          ctx.clip();
+
+          // Draw the image at the scaled size and center it
+          var x = (canvas.width - scaledWidth) / 2;
+          var y = (clipHeight - scaledHeight) / 2;
+          ctx.drawImage(image, x, y, scaledWidth, scaledHeight);
+
+          // Restore the clipping region
+          ctx.restore();
+
+          // Draw banner
+          ctx.fillStyle = bannerColor;
+          ctx.fillRect(0, clipHeight, canvas.width, canvas.height / 2);
+
+          // Draw logo
+          var logo = new Image();
+          logo.src = logo_url;
+
+          logo.onload = function () {
+            var logoHeight = 75;
+            var logoWidth = logo.width * (logoHeight / logo.height);
+            var x = canvas.width / 2 - logoWidth / 2;
+            var y = clipHeight + 50;
+            ctx.drawImage(logo, x, y, logoWidth, logoHeight);
+
+            // Draw texts
+            ctx.font = `bold ${tagline01FontSize}px Arial`;
+            ctx.fillStyle = textColor;
+            ctx.textAlign = "center";
+            ctx.fillText(
+              main_tagline,
+              canvas.width / 2,
+              clipHeight + tagline01Y
+            );
+            ctx.font = `bold ${tagline02FontSize}px Arial`;
+            ctx.fillText(
+              secondary_tagline,
+              canvas.width / 2,
+              clipHeight + tagline02Y
+            );
+
+            // Draw placeholder text box
+            ctx.fillStyle = "#FF0000"; // red color for the button text
+            ctx.fillRect(canvas.width / 2 - 200, clipHeight + boxY, 400, 60);
+            ctx.font = "bold 30px Arial";
+            ctx.fillStyle = "#FFFFFF"; // white color for the button text
+            ctx.fillText(
+              placeholder_text,
+              canvas.width / 2,
+              clipHeight + boxY + 40
+            );
+          };
+        };
+      };
+
+      // Add event listeners to the input fields to update the flyer on change
+      document
+        .getElementById("tagline01")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("tagline01FontSize")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("tagline02")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("tagline02FontSize")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("tagline03")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("imageURL")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("logoURL")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("imageFile")
+        .addEventListener("change", function (event) {
+          uploadedImage = event.target.files[0];
+          createFlyer12();
+        });
+      document
+        .getElementById("bgColor")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("bannerColor")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("textColor")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("tagline01Y")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("tagline02Y")
+        .addEventListener("input", createFlyer12);
+      document.getElementById("boxY").addEventListener("input", createFlyer12);
+
+      // Show initial preview on load
+      window.addEventListener("load", function () {
+        createFlyer12();
+      });
+
+      let download = document.getElementById("downloadBtn");
+      download.addEventListener("click", downloadImage);
+
+      // Drag and Drop functionality for the floating window
+      dragElement(document.getElementById("floatingWindow"));
+
+      function dragElement(elmnt) {
+        var pos1 = 0,
+          pos2 = 0,
+          pos3 = 0,
+          pos4 = 0;
+        if (document.getElementById(elmnt.id + "Header")) {
+          /* if present, the header is where you move the DIV from:*/
+          document.getElementById(elmnt.id + "Header").onmousedown =
+            dragMouseDown;
+        } else {
+          /* otherwise, move the DIV from anywhere inside the DIV:*/
+          elmnt.onmousedown = dragMouseDown;
+        }
+
+        function dragMouseDown(e) {
+          e = e || window.event;
+          e.preventDefault();
+          // get the mouse cursor position at startup:
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          document.onmouseup = closeDragElement;
+          // call a function whenever the cursor moves:
+          document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+          e = e || window.event;
+          e.preventDefault();
+          // calculate the new cursor position:
+          pos1 = pos3 - e.clientX;
+          pos2 = pos4 - e.clientY;
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          // set the element's new position:
+          elmnt.style.top = elmnt.offsetTop - pos2 + "px";
+          elmnt.style.left = elmnt.offsetLeft - pos1 + "px";
+        }
+
+        function closeDragElement() {
+          /* stop moving when mouse button is released:*/
+          document.onmouseup = null;
+          document.onmousemove = null;
+        }
+      }
+    </script>
+  </body>
+</html>

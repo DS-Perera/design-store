@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thumbnail Creator</title>
+    <style>
+      body {
+        font-family: "Raleway", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+      .edit-canvas {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #myCanvas {
+        padding: 0;
+        margin-bottom: 20px;
+      }
+      .floating-window {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 350px;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        z-index: 1000;
+        cursor: move;
+      }
+      .floating-window-header {
+        background: #3284ff;
+        color: white;
+        padding: 10px;
+        cursor: move;
+        border-radius: 5px 5px 0 0;
+      }
+      .floating-window-body {
+        padding: 10px;
+      }
+      .floating-window table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .floating-window table td {
+        padding: 8px;
+      }
+      .floating-window table input[type="text"],
+      .floating-window table input[type="file"],
+      .floating-window table input[type="color"] {
+        width: 100%;
+        padding: 5px;
+        margin: 5px 0;
+        border: 1px solid #3284ff;
+        border-radius: 3px;
+        font-size: 1rem;
+      }
+      .preview-footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .download {
+        padding: 10px 20px;
+        border-radius: 100px;
+        border: none;
+        background-color: #3284ff;
+        color: #ffffff;
+        font-weight: 400;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+    </style>
+    <link rel="preload" href="/static/fonts.css" as="style" />
+    <link rel="stylesheet" href="/static/fonts.css" />
+  </head>
+  <body>
+    <div class="edit-canvas">
+      <canvas id="myCanvas" width="1280" height="720"></canvas>
+    </div>
+    <div class="floating-window" id="floatingWindow">
+      <div class="floating-window-header" id="floatingWindowHeader">
+        Customize
+      </div>
+      <div class="floating-window-body">
+        <table>
+          <tr>
+            <td><label for="mainTitle">Main Title:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="PROFESSIONAL"
+                id="mainTitle"
+                name="mainTitle"
+                value="PROFESSIONAL"
+                maxlength="30"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="subtitle">Subtitle:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="YOUTUBE"
+                id="subtitle"
+                name="subtitle"
+                value="YOUTUBE"
+                maxlength="30"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="extraText">Extra Text:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="THUMBNAIL"
+                id="extraText"
+                name="extraText"
+                value="THUMBNAIL"
+                maxlength="30"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="imageURL">Image URL:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Enter image URL"
+                id="imageURL"
+                name="imageURL"
+                value=""
+                maxlength="255"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="imageFile">Upload Image:</label></td>
+            <td>
+              <input
+                type="file"
+                id="imageFile"
+                name="imageFile"
+                accept="image/*"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="placeholderColor">Placeholder Color:</label></td>
+            <td>
+              <input
+                type="color"
+                id="placeholderColor"
+                name="placeholderColor"
+                value="#FF0000"
+              />
+            </td>
+          </tr>
+        </table>
+        <button class="download" id="downloadBtn">Download</button>
+      </div>
+    </div>
+    <script>
+      var mainTitle = "PROFESSIONAL";
+      var subtitle = "YOUTUBE";
+      var extraText = "THUMBNAIL";
+      var image_url = "";
+      var placeholderColor = "#FF0000";
+      var uploadedImage = null;
+
+      function downloadImage() {
+        let canvas_d = document.getElementById("myCanvas");
+        let format = "png";
+        let dataURL = canvas_d.toDataURL(`image/${format}`);
+        let a = document.createElement("a");
+        a.href = dataURL;
+        a.download = `thumbnail.${format}`;
+        a.click();
+      }
+
+      var createFlyer = () => {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        // Get the current values from the input fields
+        mainTitle = document.getElementById("mainTitle").value;
+        subtitle = document.getElementById("subtitle").value;
+        extraText = document.getElementById("extraText").value;
+        image_url = document.getElementById("imageURL").value;
+        placeholderColor = document.getElementById("placeholderColor").value;
+
+        // Draw background
+        ctx.fillStyle = "#FFD700"; // Gold
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw the trapezoid shape and mask the image inside it
+        ctx.fillStyle = placeholderColor;
+        ctx.beginPath();
+        ctx.moveTo(canvas.width, 0);
+        ctx.lineTo(canvas.width - 400, 0);
+        ctx.lineTo(canvas.width - 800, canvas.height);
+        ctx.lineTo(canvas.width, canvas.height);
+        ctx.closePath();
+        ctx.fill();
+
+        var image = new Image();
+        if (uploadedImage) {
+          image.src = URL.createObjectURL(uploadedImage);
+        } else {
+          image.src = image_url;
+        }
+
+        image.onload = function () {
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(canvas.width, 0);
+          ctx.lineTo(canvas.width - 400, 0);
+          ctx.lineTo(canvas.width - 800, canvas.height);
+          ctx.lineTo(canvas.width, canvas.height);
+          ctx.closePath();
+          ctx.clip();
+
+          // Draw the image inside the trapezoid
+          ctx.drawImage(image, canvas.width - 800, 0, 800, canvas.height);
+          ctx.restore();
+
+          // Add text and other elements after the image is drawn to ensure they are on top
+          drawTextAndElements(ctx);
+        };
+
+        // If no image, still draw the text and elements
+        if (!uploadedImage && !image_url) {
+          drawTextAndElements(ctx);
+        }
+      };
+
+      function drawTextAndElements(ctx) {
+        // Draw shapes and additional elements
+        ctx.fillStyle = "#FF4500"; // Orange-red arrow
+        ctx.beginPath();
+        ctx.moveTo(900, 500);
+        ctx.lineTo(1100, 300);
+        ctx.lineTo(1150, 350);
+        ctx.lineTo(950, 550);
+        ctx.fill();
+        ctx.closePath();
+
+        // Draw main title
+        ctx.font = "bold 100px Arial";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(mainTitle, 50, 150);
+
+        // Draw subtitle
+        ctx.font = "bold 100px Arial";
+        ctx.fillStyle = "#000000";
+        ctx.fillText(subtitle, 50, 300);
+
+        // Draw extra text
+        ctx.font = "bold 100px Arial";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(extraText, 50, 450);
+
+        // Draw "Get more 5x views" text
+        ctx.font = "bold 70px Arial";
+        ctx.fillStyle = "#0000FF";
+        ctx.fillText("Get more", 50, 600);
+        ctx.fillText("5x views", 50, 680);
+      }
+
+      // Add event listeners to the input fields to update the flyer on change
+      document
+        .getElementById("mainTitle")
+        .addEventListener("input", createFlyer);
+      document
+        .getElementById("subtitle")
+        .addEventListener("input", createFlyer);
+      document
+        .getElementById("extraText")
+        .addEventListener("input", createFlyer);
+      document
+        .getElementById("imageURL")
+        .addEventListener("input", createFlyer);
+      document
+        .getElementById("placeholderColor")
+        .addEventListener("input", createFlyer);
+      document
+        .getElementById("imageFile")
+        .addEventListener("change", function (event) {
+          uploadedImage = event.target.files[0];
+          createFlyer();
+        });
+
+      setTimeout(createFlyer, 2000);
+      window.addEventListener("load", function () {
+        setTimeout(createFlyer, 2000);
+      });
+
+      let download = document.getElementById("downloadBtn");
+      download.addEventListener("click", downloadImage);
+
+      // Drag and Drop functionality for the floating window
+      dragElement(document.getElementById("floatingWindow"));
+
+      function dragElement(elmnt) {
+        var pos1 = 0,
+          pos2 = 0,
+          pos3 = 0,
+          pos4 = 0;
+        if (document.getElementById(elmnt.id + "Header")) {
+          document.getElementById(elmnt.id + "Header").onmousedown =
+            dragMouseDown;
+        } else {
+          elmnt.onmousedown = dragMouseDown;
+        }
+
+        function dragMouseDown(e) {
+          e = e || window.event;
+          e.preventDefault();
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          document.onmouseup = closeDragElement;
+          document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+          e = e || window.event;
+          e.preventDefault();
+          pos1 = pos3 - e.clientX;
+          pos2 = pos4 - e.clientY;
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          elmnt.style.top = elmnt.offsetTop - pos2 + "px";
+          elmnt.style.left = elmnt.offsetLeft - pos1 + "px";
+        }
+
+        function closeDragElement() {
+          document.onmouseup = null;
+          document.onmousemove = null;
+        }
+      }
+    </script>
+  </body>
+</html>

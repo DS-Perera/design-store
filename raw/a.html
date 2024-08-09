@@ -1,0 +1,2418 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      body {
+        font-family: "Raleway", Arial, sans-serif;
+        margin: 0 auto;
+        padding: 0;
+        max-height: 400px;
+        width: 100%;
+      }
+      .edit-canvas {
+        margin: 0;
+        padding: 0;
+      }
+
+      #myCanvas {
+        padding: 0;
+      }
+
+      .edit-tagline {
+        margin: 0;
+        padding: 20px 20px 20px 30px;
+      }
+
+      #tagline01 {
+        width: 92%;
+        padding: 5px;
+        margin: 5px 0 15px 0;
+        border: 1px solid #3284ff;
+        border-radius: 3px;
+        font-size: 1rem;
+      }
+
+      #tagline02 {
+        width: 92%;
+        padding: 5px;
+        margin: 5px 0 10px 0;
+        border: 1px solid #3284ff;
+        border-radius: 3px;
+        font-size: 1rem;
+      }
+
+      /* Footer CSS */
+      .preview-footer {
+        margin: 0;
+        max-width: 97%;
+        /* border-top: 1px solid #c7c7c7; */
+        padding: 30px 60px 30px 0px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .button-cluster {
+        display: flex;
+        gap: 10px;
+      }
+
+      .backBtn {
+        padding: 10px 20px;
+        border-radius: 100px;
+        border: none;
+        background-color: #a6b8b9;
+        color: #ffffff;
+        font-weight: 400;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      .download {
+        padding: 10px 20px;
+        border-radius: 100px;
+        border: none;
+        background-color: #3284ff;
+        color: #ffffff;
+        font-weight: 400;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      .share {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: 0;
+        padding: 0 0 0 30px;
+        gap: 0.3em;
+      }
+
+      .share p {
+        padding: 0;
+        margin: 0;
+        font-size: 0.9rem;
+      }
+
+      .share-cluster {
+        display: flex;
+        gap: 0.5em;
+        align-items: center;
+      }
+    </style>
+    <!-- <link rel="stylesheet" href="/static/fonts.css" /> -->
+    <!-- <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    /> -->
+    <link
+      rel="preload"
+      href="/static/fonts.css"
+      as="style"
+    />
+    <link rel="stylesheet" href="/static/fonts.css" />
+  </head>
+  <body>
+    <div class="edit-canvas">
+      <div style="font-family: Raleway"></div>
+      <div style="font-family: Montserrat"></div>
+      <canvas
+        id="myCanvas"
+        width="595"
+        height="842"
+        onclick="createFlyer6();"
+      ></canvas>
+      <div class="edit-tagline">
+        <label for="tagline01">Tagline 01:</label>
+        <input
+          type="text"
+          placeholder="Labor Day Extravaganza!"
+          id="tagline01"
+          name="tagline01"
+          value="Labor Day Extravaganza2!"
+          onchange="changeMainTagline(this.value)"
+          onclick="changeMainTagline(this.value)"
+          onfocusout="changeMainTagline(this.value)"
+          maxlength="30"
+        />
+        <label for="tagline02">Tagline 02:</label>
+        <input
+          type="text"
+          placeholder="Enjoy 15% off everything!"
+          id="tagline02"
+          name="tagline02"
+          value="Enjoy 15% off everything!"
+          onchange="changeSecondaryTagline(this.value)"
+          onclick="changeSecondaryTagline(this.value)"
+          onfocusout="changeSecondaryTagline(this.value)"
+          maxlength="55"
+        />
+      </div>
+      <div class="preview-footer">
+        <!-- <button class="backBtn">Back</button> -->
+
+        <div class="share">
+          <p>Share on</p>
+          <div class="share-cluster">
+            <a href="#"
+              ><img
+                id="shareIcon"
+                height="30"
+                width="30"
+                src="https://ik.imagekit.io/q3dh9z72h/test/facebook%20(1).png?updatedAt=1712298805601"
+                alt="facebook-button"
+            /></a>
+            <a href="#"
+              ><img
+                height="30"
+                width="30"
+                src="https://ik.imagekit.io/q3dh9z72h/test/instagram%20(2).png?updatedAt=1712298805607"
+                alt="instagram-cutton"
+            /></a>
+          </div>
+        </div>
+        <button class="download" id="downloadBtn">Download</button>
+      </div>
+    </div>
+    <script>
+            // Variables to be replaced according to user details
+            var merchant_qr_code =
+              "/static/qrcode.png";
+            var merchant_color = "#f1c40f";
+            var merchant_logo = "https://applova-sys-i1.s3.amazonaws.com/images/65_36962431/business/brand-logo.png?time=1712141809620";
+            var merchant_name = "Cafe Royale";
+            var main_tagline = "Labor Day Extravaganza2!";
+            var secondary_tagline = "Enjoy 15% off everything!";
+            var promocode = "LABORDAY2024";
+            var tertiary_tagline = "Valid until 2nd of September";
+
+            function downloadImage() {
+              // Grab the canvas element
+              let canvas_d = document.getElementById("myCanvas");
+
+              /* Create a PNG image of the pixels drawn on the canvas using the toDataURL method. PNG is the preferred format since it is supported by all browsers
+               */
+              var dataURL = canvas_d.toDataURL("image/png");
+
+              // Create a dummy link text
+              var a = document.createElement("a");
+              // Set the link to the image so that when clicked, the image begins downloading
+              a.href = dataURL;
+              // Specify the image filename
+              a.download = "LABORDAY2024-flyer.png";
+              // Click on the link to set off download
+              console.log(a);
+              a.click();
+            }
+
+            var createFlyer0 = ()=>{
+              var canvas = document.getElementById("myCanvas");
+              var ctx = canvas.getContext("2d");
+              var image = new Image();
+              image.src = 'https://applova-resources.s3.amazonaws.com/images/testbed/gears.png';
+
+              // When the image has loaded, draw it onto the canvas with fitting
+              image.onload = function() {
+
+                // Calculate dimensions to fit the image within the specified area
+                var aspectRatio = image.width / image.height;
+                var maxWidth = 64; // Maximum width
+                var maxHeight = 64; // Maximum height
+                var width = maxWidth;
+                var height = width / aspectRatio;
+
+                  if (height > maxHeight) {
+                    height = maxHeight;
+                    width = height * aspectRatio;
+                  }
+
+                var x = 252 + (maxWidth - width) / 2; // Center horizontally
+                var y = 20 + (maxHeight - height) / 2; // Center vertically
+
+                // Draw the image
+                ctx.drawImage(image, x, y, width, height);
+              }
+
+              // Use promo code text snippet
+              ctx.font = '900 18px Raleway'; //Font style
+              ctx.fillStyle = '#1f1f1f';
+              ctx.textAlign = 'center';
+              ctx.fillText('Please wait until the canvas is being created...', 300, 130);
+            }
+
+            var createFlyer1 = () => {
+              // Get the canvas element and its context
+              var canvas = document.getElementById("myCanvas");
+              var ctx = canvas.getContext("2d");
+
+              // Calculate brightness of background color
+              function calculateBrightness(hex) {
+                // Convert hex color to RGB
+                var r = parseInt(hex.substring(1, 3), 16);
+                var g = parseInt(hex.substring(3, 5), 16);
+                var b = parseInt(hex.substring(5, 7), 16);
+                // Calculate brightness using the luminance formula
+                return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+              }
+
+              // Determine font color based on background color brightness
+              var fontColor;
+              if (calculateBrightness(merchant_color) > 0.5) {
+                // If background is bright, set font color to black
+                fontColor = "#0f0f0f";
+              } else {
+                // If background is dark, set font color to white
+                fontColor = "#f0f0f0";
+              }
+
+              // Set font color
+              ctx.fillStyle = fontColor;
+
+              // Load background image
+              var backgroundImage = new Image();
+              backgroundImage.src = "https://applova-sys-i1.s3.amazonaws.com/images/65_36962431/business/splash-screen.jpg?time=1718228023498";
+              backgroundImage.crossOrigin = "anonymous";
+
+              // When the background image is loaded, draw it onto the canvas
+              backgroundImage.onload = function () {
+                ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+                // Draw semi-transparent black rectangle covering the canvas
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw rectangle on top of the background image
+                var rectX = 82; // X-coordinate of the top-left corner of the rectangle
+                var rectY = 0; // Y-coordinate of the top-left corner of the rectangle
+                var rectWidth = 431; // Width of the rectangle
+                var rectHeight = 499; // Height of the rectangle
+
+                // Draw the rectangle
+                ctx.fillStyle = merchant_color;
+                ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+
+                // Draw circle on top of the background image
+                var circleX = 82 + 431 / 2; // X-coordinate of the center of the circle
+                var circleY = 287 + 431 / 2; // Y-coordinate of the center of the circle
+                var radius = 431 / 2; // Radius of the circle
+
+                // Draw the circle
+                ctx.beginPath();
+                ctx.arc(circleX, circleY, radius, 0, 2 * Math.PI);
+                ctx.fillStyle = merchant_color;
+                ctx.fill();
+                ctx.closePath();
+
+                // Draw blurred circle as a shadow
+                var shadowX = 305; // X-coordinate of the center of the circle
+                var shadowY = 75; // Y-coordinate of the center of the circle
+                var shadowRadius = 50; // Radius of the circle
+                ctx.beginPath();
+                ctx.arc(shadowX, shadowY, shadowRadius, 0, 2 * Math.PI);
+                ctx.fillStyle = "rgba(31, 31, 31, 0.2)"; // Blurred circle color with 20% opacity
+                ctx.filter = "blur(6px)"; // Apply blur effect to the circle
+                ctx.fill();
+                ctx.closePath();
+                ctx.filter = "none"; // Reset filter
+
+                // Load Brand image
+                var image = new Image();
+                image.src = merchant_logo;
+                image.crossOrigin = "anonymous";
+
+                // When the image has loaded, draw it onto the canvas with fitting
+                image.onload = function () {
+                  // Calculate dimensions to fit the image within the specified area
+                  var aspectRatio = image.width / image.height;
+                  var maxWidth = 109; // Maximum width
+                  var maxHeight = 109; // Maximum height
+                  var width = maxWidth;
+                  var height = width / aspectRatio;
+
+                  if (height > maxHeight) {
+                    height = maxHeight;
+                    width = height * aspectRatio;
+                  }
+
+                  var x = 252 + (maxWidth - width) / 2; // Center horizontally
+                  var y = 20 + (maxHeight - height) / 2; // Center vertically
+
+                  // Draw the image
+                  ctx.drawImage(image, x, y, width, height);
+                };
+
+                // Add text "Merchant Name"
+                var text_name = merchant_name;
+
+                ctx.font = "bold 24px Raleway"; // Font style
+                ctx.fillStyle = fontColor; // Text color
+                ctx.textAlign = "center"; //Text Align center
+                ctx.fillText(text_name, 305, 155); // Text and position
+
+                // Add main tagline with automatic line break
+                var main_text = main_tagline;
+                var maxWidth = 250; // Maximum width for the text
+                var lineHeight = 42; // Line height (font size)
+
+                var words = main_text.split(" ");
+                var line = "";
+                var lines = [];
+
+                for (var i = 0; i < words.length; i++) {
+                  var testLine = line + words[i] + " ";
+                  var metrics = ctx.measureText(testLine);
+                  var testWidth = metrics.width;
+                  if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                lines.push(line);
+
+                ctx.font = "900 36px Montserrat"; // Font style
+                ctx.fillStyle = fontColor; // Text color
+                ctx.textAlign = "center"; // Align text to the center
+
+                if (words.length > 4) {
+            lineHeight = 30;
+            ctx.font = "900 30px Montserrat"; // Font style
+          }
+
+                var textY = 200;
+                for (var j = 0; j < lines.length; j++) {
+                  ctx.fillText(lines[j], 310, textY);
+                  textY += lineHeight;
+                }
+
+                // Add secondary tagline with automatic line break
+                var secondary_text = secondary_tagline;
+                var maxWidth = 700; // Maximum width for the text
+                var lineHeight = 30; // Line height (font size)
+
+                var words = secondary_text.split(" ");
+                var line = "";
+                var lines = [];
+
+                for (var i = 0; i < words.length; i++) {
+                  var testLine = line + words[i] + " ";
+                  var metrics = ctx.measureText(testLine);
+                  var testWidth = metrics.width;
+                  if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                lines.push(line);
+
+                ctx.font = "500 20px Raleway"; // Font style
+                ctx.fillStyle = fontColor; // Text color
+                ctx.textAlign = "center"; // Align text to the center
+
+                var textY = 290;
+                for (var j = 0; j < lines.length; j++) {
+                  ctx.fillText(lines[j], 308, textY);
+                  textY += lineHeight;
+                }
+
+                // Use promo code text snippet
+                ctx.font = "900 22px Raleway"; //Font style
+                ctx.fillStyle = fontColor;
+                ctx.textAlign = "center";
+                ctx.fillText("Use the Promo Code", 305, 365);
+
+                // Add promo code
+                ctx.font = "900 32px Montserrat"; //Font style
+                ctx.fillStyle = fontColor;
+                ctx.textAlign = "center";
+                ctx.fillText(promocode, 305, 400);
+
+                // Scan To Order text snippet
+                ctx.font = "900 18px Raleway"; //Font style
+                ctx.fillStyle = fontColor;
+                ctx.textAlign = "center";
+                ctx.fillText("Scan To Order", 299, 440);
+
+                // Load QR image
+                var qr_image = new Image();
+                qr_image.crossOrigin = "anonymous";
+
+                // When the image has loaded, draw it onto the canvas with fitting
+                qr_image.onload = function () {
+                  // Calculate dimensions to fit the image within the specified area
+                  var aspectRatio = qr_image.width / qr_image.height;
+                  var maxWidth = 128; // Maximum width
+                  var maxHeight = 128; // Maximum height
+                  var width = maxWidth;
+                  var height = width / aspectRatio;
+
+                  if (height > maxHeight) {
+                    height = maxHeight;
+                    width = height * aspectRatio;
+                  }
+
+                  var x = 235 + (maxWidth - width) / 2; // Center horizontally
+                  var y = 450 + (maxHeight - height) / 2; // Center vertically
+
+                  // Draw the image
+                  ctx.drawImage(qr_image, x, y, width, height);
+                };
+                qr_image.src = merchant_qr_code;
+
+                // Add tertiary tagline with automatic line break
+                var tertiary = tertiary_tagline;
+                var maxWidth = 600; // Maximum width for the text
+                var lineHeight = 28; // Line height (font size)
+
+                var words = tertiary.split(" ");
+                var line = "";
+                var lines = [];
+
+                for (var i = 0; i < words.length; i++) {
+                  var testLine = line + words[i] + " ";
+                  var metrics = ctx.measureText(testLine);
+                  var testWidth = metrics.width;
+                  if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                lines.push(line);
+
+                ctx.font = "700 14px Raleway"; // Font style
+                ctx.fillStyle = fontColor; // Text color
+                ctx.textAlign = "center"; // Align text to the center
+
+                var textY = 620;
+                for (var j = 0; j < lines.length; j++) {
+                  ctx.fillText(lines[j], 305, textY);
+                  textY += lineHeight;
+                }
+
+                // Powered by text snippet
+                ctx.font = "900 12px Raleway"; //Font style
+                ctx.fillStyle = fontColor;
+                ctx.textAlign = "center";
+                ctx.fillText("Powered by", 268, 660);
+
+                // Load image based on the brightness of merchant_color
+                var imageUrl;
+                if (calculateBrightness(merchant_color) > 0.5) {
+                  // If background is bright, load black logo
+                  imageUrl =
+                    "https://ik.imagekit.io/q3dh9z72h/test/applova-logo-black.png?updatedAt=1708068935048";
+                } else {
+                  // If background is dark, load white logo
+                  imageUrl =
+                    "https://ik.imagekit.io/q3dh9z72h/images/test/applova-logo-white.png?updatedAt=1700027708323";
+                }
+
+                // Create new image element
+                var logoImage = new Image();
+
+                // Set image source
+                logoImage.src = imageUrl;
+                logoImage.crossOrigin = "anonymous";
+
+                // When the image is loaded, draw it onto the canvas
+                logoImage.onload = function () {
+                  // Calculate aspect ratio of the image
+                  var aspectRatio = logoImage.width / logoImage.height;
+
+                  // Calculate maximum width and height based on aspect ratio and desired height
+                  var maxHeight = 24;
+                  var maxWidth = maxHeight * aspectRatio;
+
+                  // Draw the image onto the canvas with the specified position and dimensions
+                  ctx.drawImage(logoImage, 305, 643, maxWidth, maxHeight);
+                };
+              };
+            };
+
+            var createFlyer2 = () => {
+              // Get the canvas element and its context
+              var canvas = document.getElementById("myCanvas");
+              var ctx = canvas.getContext("2d");
+
+              // Calculate brightness of background color
+              function calculateBrightness(hex) {
+                // Convert hex color to RGB
+                var r = parseInt(hex.substring(1, 3), 16);
+                var g = parseInt(hex.substring(3, 5), 16);
+                var b = parseInt(hex.substring(5, 7), 16);
+                // Calculate brightness using the luminance formula
+                return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+              }
+
+              // Determine font color based on background color brightness
+              var fontColor;
+              if (calculateBrightness(merchant_color) > 0.5) {
+                // If background is bright, set font color to black
+                fontColor = "#0f0f0f";
+              } else {
+                // If background is dark, set font color to white
+                fontColor = "#f0f0f0";
+              }
+
+              // Set font color
+              ctx.fillStyle = fontColor;
+
+              //Canvas background
+              canvas.style.backgroundColor = merchant_color;
+
+              // Load QR image
+              var qr_image = new Image();
+              qr_image.crossOrigin = "anonymous";
+
+              // When the image has loaded, draw it onto the canvas with fitting
+              qr_image.onload = function () {
+                // Calculate dimensions to fit the image within the specified area
+                var aspectRatio = qr_image.width / qr_image.height;
+                var maxWidth = 128; // Maximum width
+                var maxHeight = 128; // Maximum height
+                var width = maxWidth;
+                var height = width / aspectRatio;
+
+                if (height > maxHeight) {
+                  height = maxHeight;
+                  width = height * aspectRatio;
+                }
+
+                var x = 235 + (maxWidth - width) / 2; // Center horizontally
+                var y = 585 + (maxHeight - height) / 2; // Center vertically
+
+                // Draw the image
+                ctx.drawImage(qr_image, x, y, width, height);
+              };
+              qr_image.src = merchant_qr_code;
+
+              // Load image based on the brightness of merchant_color
+              var imageUrl;
+              if (calculateBrightness(merchant_color) > 0.5) {
+                // If background is bright, load black logo
+                imageUrl =
+                  "https://ik.imagekit.io/q3dh9z72h/test/applova-logo-black.png?updatedAt=1708068935048";
+              } else {
+                // If background is dark, load white logo
+                imageUrl =
+                  "https://ik.imagekit.io/q3dh9z72h/images/test/applova-logo-white.png?updatedAt=1700027708323";
+              }
+
+              // Create new image element
+              var logoImage = new Image();
+
+              // Set image source
+              logoImage.src = imageUrl;
+              logoImage.crossOrigin = "anonymous";
+
+              // When the image is loaded, draw it onto the canvas
+              logoImage.onload = function () {
+                // Calculate aspect ratio of the image
+                var aspectRatio = logoImage.width / logoImage.height;
+
+                // Calculate maximum width and height based on aspect ratio and desired height
+                var maxHeight = 24;
+                var maxWidth = maxHeight * aspectRatio;
+
+                // Draw the image onto the canvas with the specified position and dimensions
+                ctx.drawImage(logoImage, 305, 788, maxWidth, maxHeight);
+              };
+
+              // Load image
+              var bg_image = new Image();
+              bg_image.crossOrigin = "anonymous";
+              bg_image.onload = function () {
+
+                // Draw semi-transparent black rectangle covering the canvas
+                ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw circle
+                var centerX = canvas.width / 2;
+                var centerY = -140;
+                var radius = 500;
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.clip(); // Clip to the circle
+
+                // Scale the image to fit the circle
+                var scaleFactor = Math.max(
+                  canvas.width / bg_image.width,
+                  canvas.height / bg_image.height
+                );
+                var scaledWidth = bg_image.width * scaleFactor;
+                var scaledHeight = bg_image.height * scaleFactor;
+                var offsetX = (canvas.width - scaledWidth) / 2;
+                var offsetY = (canvas.height - scaledHeight) / 2;
+
+                ctx.drawImage(bg_image, offsetX, offsetY, scaledWidth, scaledHeight);
+
+                // Add text "Merchant Name"
+                var text_name = merchant_name;
+
+                ctx.font = "bold 22px Raleway"; // Font style
+                ctx.fillStyle = "#f0f0f0"; // Text color
+                ctx.textAlign = "center"; //Text Align center
+                ctx.fillText(text_name, 300, 188); // Text and position
+
+                // Add main tagline with automatic line break
+                var main_text = main_tagline;
+                var maxWidth = 300; // Maximum width for the text
+                var lineHeight = 48; // Line height (font size)
+
+                var words = main_text.split(" ");
+                var line = "";
+                var lines = [];
+
+                for (var i = 0; i < words.length; i++) {
+                  var testLine = line + words[i] + " ";
+                  var metrics = ctx.measureText(testLine);
+                  var testWidth = metrics.width;
+                  if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                lines.push(line);
+
+                ctx.font = "900 34px Montserrat"; // Font style
+                ctx.fillStyle = "#f0f0f0"; // Text color
+                ctx.textAlign = "center"; // Align text to the center
+
+                var textY = 255;
+                for (var j = 0; j < lines.length; j++) {
+                  ctx.fillText(lines[j], 310, textY);
+                  textY += lineHeight;
+                }
+              };
+
+              bg_image.src = "https://applova-sys-i1.s3.amazonaws.com/images/65_36962431/business/splash-screen.jpg?time=1718228023498";
+
+              // Load Brand image
+              var image = new Image();
+              image.crossOrigin = "anonymous";
+
+              // When the image has loaded, draw it onto the canvas with fitting
+              image.onload = function () {
+                // Calculate dimensions to fit the image within the specified area
+                var aspectRatio = image.width / image.height;
+                var maxWidth = 109; // Maximum width
+                var maxHeight = 109; // Maximum height
+                var width = maxWidth;
+                var height = width / aspectRatio;
+
+                if (height > maxHeight) {
+                  height = maxHeight;
+                  width = height * aspectRatio;
+                }
+
+                var x = 245 + (maxWidth - width) / 2; // Center horizontally
+                var y = 50 + (maxHeight - height) / 2; // Center vertically
+
+                // Draw the image
+                ctx.drawImage(image, x, y, width, height);
+              };
+              image.src = merchant_logo;
+
+              // Add secondary tagline with automatic line break
+              var secondary_text = secondary_tagline;
+              var maxWidth = 170; // Maximum width for the text
+              var lineHeight = 40; // Line height (font size)
+
+              var words = secondary_text.split(" ");
+              var line = "";
+              var lines = [];
+
+              for (var i = 0; i < words.length; i++) {
+                var testLine = line + words[i] + " ";
+                var metrics = ctx.measureText(testLine);
+                var testWidth = metrics.width;
+                if (testWidth > maxWidth && i > 0) {
+                  lines.push(line);
+                  line = words[i] + " ";
+                } else {
+                  line = testLine;
+                }
+              }
+              lines.push(line);
+
+              ctx.font = "500 26px Raleway"; // Font style
+              ctx.fillStyle = fontColor; // Text color
+              ctx.textAlign = "center"; // Align text to the center
+
+              var textY = 410;
+              for (var j = 0; j < lines.length; j++) {
+                ctx.fillText(lines[j], 308, textY);
+                textY += lineHeight;
+              }
+
+              // Use promo code text snippet
+              ctx.font = "900 24px Raleway"; //Font style
+              ctx.fillStyle = fontColor;
+              ctx.textAlign = "center";
+              ctx.fillText("Use the Promo Code", 305, 495);
+
+              // Add promo code
+              ctx.font = "900 32px Montserrat"; //Font style
+              ctx.fillStyle = fontColor;
+              ctx.textAlign = "center";
+              ctx.fillText(promocode, 305, 530);
+
+              // Add tertiary tagline with automatic line break
+              var tertiary = tertiary_tagline;
+              var maxWidth = 600; // Maximum width for the text
+              var lineHeight = 28; // Line height (font size)
+
+              var words = tertiary.split(" ");
+              var line = "";
+              var lines = [];
+
+              for (var i = 0; i < words.length; i++) {
+                var testLine = line + words[i] + " ";
+                var metrics = ctx.measureText(testLine);
+                var testWidth = metrics.width;
+                if (testWidth > maxWidth && i > 0) {
+                  lines.push(line);
+                  line = words[i] + " ";
+                } else {
+                  line = testLine;
+                }
+              }
+              lines.push(line);
+
+              ctx.font = "700 16px Raleway"; // Font style
+              ctx.fillStyle = fontColor; // Text color
+              ctx.textAlign = "center"; // Align text to the center
+
+              var textY = 765;
+              for (var j = 0; j < lines.length; j++) {
+                ctx.fillText(lines[j], 305, textY);
+                textY += lineHeight;
+              }
+
+              // Powered by text snippet
+              ctx.font = "900 12px Raleway"; //Font style
+              ctx.fillStyle = fontColor;
+              ctx.textAlign = "center";
+              ctx.fillText("Powered by", 268, 805);
+
+              // Scan To Order text snippet
+              ctx.font = "900 18px Raleway"; //Font style
+              ctx.fillStyle = fontColor;
+              ctx.textAlign = "center";
+              ctx.fillText("Scan To Order", 299, 575);
+            };
+
+            var createFlyer3 = () => {
+              // Get the canvas element and its context
+              var canvas = document.getElementById("myCanvas");
+              var ctx = canvas.getContext("2d");
+
+              // Load background image
+              var backgroundImage = new Image();
+              backgroundImage.src = "https://applova-sys-i1.s3.amazonaws.com/images/65_36962431/business/splash-screen.jpg?time=1718228023498";
+              backgroundImage.crossOrigin = "anonymous";
+
+              // Draw the image to the canvas
+              backgroundImage.onload = function () {
+                // Draw the background image first
+                ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+                 // Draw semi-transparent black rectangle covering the canvas
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Calculate brightness of background color
+                function calculateBrightness(hex) {
+                  // Convert hex color to RGB
+                  var r = parseInt(hex.substring(1, 3), 16);
+                  var g = parseInt(hex.substring(3, 5), 16);
+                  var b = parseInt(hex.substring(5, 7), 16);
+                  // Calculate brightness using the luminance formula
+                  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+                }
+
+                // Determine font color based on background color brightness
+                var fontColor;
+                if (calculateBrightness(merchant_color) > 0.5) {
+                  // If background is bright, set font color to black
+                  fontColor = "#0f0f0f";
+                } else {
+                  // If background is dark, set font color to white
+                  fontColor = "#f0f0f0";
+                }
+
+                // Set font color
+                ctx.fillStyle = fontColor;
+
+                // Rotate canvas context by 8 degrees to the left
+                ctx.rotate((-6 * Math.PI) / 180);
+
+                // Draw square graphic
+                var squareHeight = 570;
+                var squareWidth = 680;
+                var squareX = -110;
+                var squareY = 340;
+
+                ctx.fillStyle = merchant_color;
+                ctx.fillRect(squareX, squareY, squareWidth, squareHeight);
+
+                // Rotate canvas context by 8 degrees to the left
+                ctx.rotate((6 * Math.PI) / 180);
+
+                // Draw square graphic with white border and rounded corners
+                var squareWidth = 550;
+                var squareHeight = 800;
+                var squareX = (canvas.width - squareWidth) / 2;
+                var squareY = (canvas.height - squareHeight) / 2;
+                var cornerRadius = 10; // Adjust this value for the desired roundedness
+                var borderWidth = 3;
+
+                // Draw transparent fill color
+                ctx.fillStyle = "rgba(255, 255, 255, 0)"; // Transparent white
+                ctx.fillRect(squareX, squareY, squareWidth, squareHeight);
+
+                // Draw white border with rounded corners
+                ctx.strokeStyle = "#F0F0F0"; // White
+                ctx.lineWidth = borderWidth;
+                ctx.beginPath();
+                ctx.moveTo(squareX + cornerRadius, squareY);
+                ctx.arcTo(
+                  squareX + squareWidth,
+                  squareY,
+                  squareX + squareWidth,
+                  squareY + squareHeight,
+                  cornerRadius
+                );
+                ctx.arcTo(
+                  squareX + squareWidth,
+                  squareY + squareHeight,
+                  squareX,
+                  squareY + squareHeight,
+                  cornerRadius
+                );
+                ctx.arcTo(
+                  squareX,
+                  squareY + squareHeight,
+                  squareX,
+                  squareY,
+                  cornerRadius
+                );
+                ctx.arcTo(
+                  squareX,
+                  squareY,
+                  squareX + squareWidth,
+                  squareY,
+                  cornerRadius
+                );
+                ctx.closePath();
+                ctx.stroke();
+
+                // Load Brand image
+                var image = new Image();
+                image.src = merchant_logo;
+                image.crossOrigin = "anonymous";
+
+                // When the image has loaded, draw it onto the canvas with fitting
+                image.onload = function () {
+                  // Calculate dimensions to fit the image within the specified area
+                  var aspectRatio = image.width / image.height;
+                  var maxWidth = 109; // Maximum width
+                  var maxHeight = 109; // Maximum height
+                  var width = maxWidth;
+                  var height = width / aspectRatio;
+
+                  if (height > maxHeight) {
+                    height = maxHeight;
+                    width = height * aspectRatio;
+                  }
+
+                  var x = 50 + (maxWidth - width) / 2; // Center horizontally
+                  var y = 50 + (maxHeight - height) / 2; // Center vertically
+
+                  // Draw the image
+                  ctx.drawImage(image, x, y, width, height);
+                };
+
+                // Add text "Merchant Name"
+                var text_name = merchant_name;
+
+                ctx.font = "bold 22px Raleway"; // Font style
+                ctx.fillStyle = "#f0f0f0"; // Text color
+                ctx.textAlign = "center"; //Text Align center
+                ctx.fillText(text_name, 120, 188); // Text and position
+
+                // Add main tagline with automatic line break
+                var main_text = main_tagline;
+                var maxWidth = 300; // Maximum width for the text
+                var lineHeight = 48; // Line height (font size)
+
+                var words = main_text.split(" ");
+                var line = "";
+                var lines = [];
+
+                for (var i = 0; i < words.length; i++) {
+                  var testLine = line + words[i] + " ";
+                  var metrics = ctx.measureText(testLine);
+                  var testWidth = metrics.width;
+                  if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                lines.push(line);
+
+                ctx.font = "900 34px Montserrat"; // Font style
+                ctx.fillStyle = "#f0f0f0"; // Text color
+                ctx.textAlign = "left"; // Align text to the center
+
+                if (words.length > 4) {
+            lineHeight = 30;
+            ctx.font = "900 30px Montserrat"; // Font style
+          }
+
+                var textY = 255;
+                for (var j = 0; j < lines.length; j++) {
+                  ctx.fillText(lines[j], 55, textY);
+                  textY += lineHeight;
+                }
+
+                // Add secondary tagline with automatic line break
+                var secondary_text = secondary_tagline;
+                var maxWidth = 700; // Maximum width for the text
+                var lineHeight = 40; // Line height (font size)
+
+                var words = secondary_text.split(" ");
+                var line = "";
+                var lines = [];
+
+                for (var i = 0; i < words.length; i++) {
+                  var testLine = line + words[i] + " ";
+                  var metrics = ctx.measureText(testLine);
+                  var testWidth = metrics.width;
+                  if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                lines.push(line);
+
+                ctx.font = "500 26px Raleway"; // Font style
+                ctx.fillStyle = fontColor; // Text color
+                ctx.textAlign = "center"; // Align text to the center
+
+                var textY = 380;
+                for (var j = 0; j < lines.length; j++) {
+                  ctx.fillText(lines[j], 305, textY);
+                  textY += lineHeight;
+                }
+
+                //Use promo code text snippet
+                ctx.font = "900 24px Raleway"; //Font style
+                ctx.fillStyle = fontColor;
+                ctx.textAlign = "center";
+                ctx.fillText("Use the Promo Code", 305, 470);
+
+                //Add promo code
+                ctx.font = "900 32px Montserrat"; //Font style
+                ctx.fillStyle = fontColor;
+                ctx.textAlign = "center";
+                ctx.fillText(promocode, 305, 510);
+
+                // Add tertiary tagline with automatic line break
+                var tertiary = tertiary_tagline;
+                var maxWidth = 600; // Maximum width for the text
+                var lineHeight = 28; // Line height (font size)
+
+                var words = tertiary.split(" ");
+                var line = "";
+                var lines = [];
+
+                for (var i = 0; i < words.length; i++) {
+                  var testLine = line + words[i] + " ";
+                  var metrics = ctx.measureText(testLine);
+                  var testWidth = metrics.width;
+                  if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                lines.push(line);
+
+                ctx.font = "700 16px Raleway"; // Font style
+                ctx.fillStyle = fontColor; // Text color
+                ctx.textAlign = "center"; // Align text to the center
+
+                var textY = 750;
+                for (var j = 0; j < lines.length; j++) {
+                  ctx.fillText(lines[j], 305, textY);
+                  textY += lineHeight;
+                }
+
+                //Powered by text snippet
+                ctx.font = "900 12px Raleway"; //Font style
+                ctx.fillStyle = fontColor;
+                ctx.textAlign = "center";
+                ctx.fillText("Powered by", 268, 805);
+
+                // Load image based on the brightness of merchant_color
+                var imageUrl;
+                if (calculateBrightness(merchant_color) > 0.5) {
+                  // If background is bright, load black logo
+                  imageUrl =
+                    "https://ik.imagekit.io/q3dh9z72h/test/applova-logo-black.png?updatedAt=1708068935048";
+                } else {
+                  // If background is dark, load white logo
+                  imageUrl =
+                    "https://ik.imagekit.io/q3dh9z72h/images/test/applova-logo-white.png?updatedAt=1700027708323";
+                }
+
+                // Create new image element
+                var logoImage = new Image();
+
+                // Set image source
+                logoImage.src = imageUrl;
+                logoImage.crossOrigin = "anonymous";
+
+                // When the image is loaded, draw it onto the canvas
+                logoImage.onload = function () {
+                  // Calculate aspect ratio of the image
+                  var aspectRatio = logoImage.width / logoImage.height;
+
+                  // Calculate maximum width and height based on aspect ratio and desired height
+                  var maxHeight = 24;
+                  var maxWidth = maxHeight * aspectRatio;
+
+                  // Draw the image onto the canvas with the specified position and dimensions
+                  ctx.drawImage(logoImage, 305, 788, maxWidth, maxHeight);
+                };
+
+                //Scan To Order text snippet
+                ctx.font = "900 18px Raleway"; //Font style
+                ctx.fillStyle = fontColor;
+                ctx.textAlign = "center";
+                ctx.fillText("Scan To Order", 299, 575);
+
+                // Load QR image
+                var qr_image = new Image();
+                qr_image.src = merchant_qr_code;
+                qr_image.crossOrigin = "anonymous";
+
+                // When the image has loaded, draw it onto the canvas with fitting
+                qr_image.onload = function () {
+                  // Calculate dimensions to fit the image within the specified area
+                  var aspectRatio = qr_image.width / qr_image.height;
+                  var maxWidth = 128; // Maximum width
+                  var maxHeight = 128; // Maximum height
+                  var width = maxWidth;
+                  var height = width / aspectRatio;
+
+                  if (height > maxHeight) {
+                    height = maxHeight;
+                    width = height * aspectRatio;
+                  }
+
+                  var x = 235 + (maxWidth - width) / 2; // Center horizontally
+                  var y = 585 + (maxHeight - height) / 2; // Center vertically
+
+                  // Draw the image
+                  ctx.drawImage(qr_image, x, y, width, height);
+                };
+              };
+            };
+
+            var createFlyer4 = () => {
+              // Get the canvas element and its context
+              var canvas = document.getElementById("myCanvas");
+              var ctx = canvas.getContext("2d");
+
+              // Load background image
+              var backgroundImage = new Image();
+              backgroundImage.src = "https://applova-sys-i1.s3.amazonaws.com/images/65_36962431/business/splash-screen.jpg?time=1718228023498";
+              backgroundImage.crossOrigin = "anonymous";
+
+              // When the background image is loaded, draw it onto the canvas
+              backgroundImage.onload = function () {
+                ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+                // Draw semi-transparent black rectangle covering the canvas
+                ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw the circle graphic
+                var circleX = 310; // X coordinates
+                var circleY = 1125; // Y coordinate
+                var circleRadius = 700; // Radius
+
+                ctx.beginPath();
+                ctx.arc(circleX, circleY, circleRadius, 0, 2 * Math.PI);
+                ctx.fillStyle = merchant_color; // Set fill color
+                ctx.fill();
+                ctx.closePath();
+
+                // Calculate brightness of background color
+                function calculateBrightness(hex) {
+                  // Convert hex color to RGB
+                  var r = parseInt(hex.substring(1, 3), 16);
+                  var g = parseInt(hex.substring(3, 5), 16);
+                  var b = parseInt(hex.substring(5, 7), 16);
+                  // Calculate brightness using the luminance formula
+                  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+                }
+
+                // Determine font color based on background color brightness
+                var fontColor;
+                if (calculateBrightness(merchant_color) > 0.5) {
+                  // If background is bright, set font color to black
+                  fontColor = "#000";
+                } else {
+                  // If background is dark, set font color to white
+                  fontColor = "#fff";
+                }
+
+                // Set font color
+                ctx.fillStyle = fontColor;
+
+                // Load Brand image
+                var image = new Image();
+                image.src = merchant_logo;
+                image.crossOrigin = "anonymous";
+
+                // When the image has loaded, draw it onto the canvas with fitting
+                image.onload = function () {
+                  // Calculate dimensions to fit the image within the specified area
+                  var aspectRatio = image.width / image.height;
+                  var maxWidth = 109; // Maximum width
+                  var maxHeight = 109; // Maximum height
+                  var width = maxWidth;
+                  var height = width / aspectRatio;
+
+                  if (height > maxHeight) {
+                    height = maxHeight;
+                    width = height * aspectRatio;
+                  }
+
+                  var x = 252 + (maxWidth - width) / 2; // Center horizontally
+                  var y = 50 + (maxHeight - height) / 2; // Center vertically
+
+                  // Draw the image
+                  ctx.drawImage(image, x, y, width, height);
+                };
+
+                // Add text "Merchant Name"
+                var text_name = merchant_name;
+
+                ctx.font = "bold 24px Raleway"; // Font style
+                ctx.fillStyle = "#fff"; // Text color
+                ctx.textAlign = "center"; //Text Align center
+                ctx.fillText(text_name, 305, 185); // Text and position
+
+                // Add main tagline with automatic line break
+                var main_text = main_tagline;
+                var maxWidth = 180; // Maximum width for the text
+                var lineHeight = 65; // Line height (font size)
+
+                var words = main_text.split(" ");
+                var line = "";
+                var lines = [];
+
+                for (var i = 0; i < words.length; i++) {
+                  var testLine = line + words[i] + " ";
+                  var metrics = ctx.measureText(testLine);
+                  var testWidth = metrics.width;
+                  if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                lines.push(line);
+
+                ctx.font = "900 68px Montserrat"; // Font style
+                ctx.fillStyle = "#fff"; // Text color
+                ctx.textAlign = "center"; // Align text to the center
+
+                if (words.length > 4) {
+            lineHeight = 50;
+            ctx.font = "900 55px Montserrat"; // Font style
+          }
+
+                var textY = 270;
+                for (var j = 0; j < lines.length; j++) {
+                  ctx.fillText(lines[j], 310, textY);
+                  textY += lineHeight;
+                }
+
+                // Add secondary tagline with automatic line break
+                var secondary_text = secondary_tagline;
+                var maxWidth = 1100; // Maximum width for the text
+                var lineHeight = 48; // Line height (font size)
+
+                var words = secondary_text.split(" ");
+                var line = "";
+                var lines = [];
+
+                for (var i = 0; i < words.length; i++) {
+                  var testLine = line + words[i] + " ";
+                  var metrics = ctx.measureText(testLine);
+                  var testWidth = metrics.width;
+                  if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                lines.push(line);
+
+                ctx.font = "500 28px Raleway"; // Font style
+                ctx.fillStyle = fontColor; // Text color
+                ctx.textAlign = "center"; // Align text to the center
+
+                var textY = 520;
+                for (var j = 0; j < lines.length; j++) {
+                  ctx.fillText(lines[j], 305, textY);
+                  textY += lineHeight;
+                }
+
+                //Use promo code text snippet
+                ctx.font = "900 28px Raleway"; //Font style
+                ctx.fillStyle = fontColor;
+                ctx.textAlign = "center";
+                ctx.fillText("Use the Promo Code", 305, 620);
+
+                //Add promo code
+                ctx.font = "900 28px Raleway"; //Font style
+                ctx.fillStyle = fontColor;
+                ctx.textAlign = "center";
+                ctx.fillText(promocode, 305, 655);
+
+                // Add tertiary tagline with automatic line break
+                var tertiary = tertiary_tagline;
+                var maxWidth = 300; // Maximum width for the text
+                var lineHeight = 28; // Line height (font size)
+
+                var words = tertiary.split(" ");
+                var line = "";
+                var lines = [];
+
+                for (var i = 0; i < words.length; i++) {
+                  var testLine = line + words[i] + " ";
+                  var metrics = ctx.measureText(testLine);
+                  var testWidth = metrics.width;
+                  if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                lines.push(line);
+
+                ctx.font = "600 18px Raleway"; // Font style
+                ctx.fillStyle = fontColor; // Text color
+                ctx.textAlign = "center"; // Align text to the center
+
+                var textY = 720;
+                for (var j = 0; j < lines.length; j++) {
+                  ctx.fillText(lines[j], 305, textY);
+                  textY += lineHeight;
+                }
+
+                // Powered by text snippet
+                ctx.font = "900 12px Raleway"; //Font style
+                ctx.fillStyle = fontColor;
+                ctx.textAlign = "center";
+                ctx.fillText("Powered by", 238, 796);
+
+                // Load image based on the brightness of merchant_color
+                var imageUrl;
+                if (calculateBrightness(merchant_color) > 0.5) {
+                  // If background is bright, load black logo
+                  imageUrl =
+                    "https://ik.imagekit.io/q3dh9z72h/test/applova-logo-black.png?updatedAt=1708068935048";
+                } else {
+                  // If background is dark, load white logo
+                  imageUrl =
+                    "https://ik.imagekit.io/q3dh9z72h/images/test/applova-logo-white.png?updatedAt=1700027708323";
+                }
+
+                // Create new image element
+                var logoImage = new Image();
+
+                // Set image source
+                logoImage.src = imageUrl;
+                logoImage.crossOrigin = "anonymous";
+
+                // When the image is loaded, draw it onto the canvas
+                logoImage.onload = function () {
+                  // Calculate aspect ratio of the image
+                  var aspectRatio = logoImage.width / logoImage.height;
+
+                  // Calculate maximum width and height based on aspect ratio and desired height
+                  var maxHeight = 24;
+                  var maxWidth = maxHeight * aspectRatio;
+
+                  // Draw the image onto the canvas with the specified position and dimensions
+                  ctx.drawImage(logoImage, 275, 780, maxWidth, maxHeight);
+                };
+
+                //Scan To Order text snippet
+                ctx.font = "900 18px Raleway"; //Font style
+                ctx.fillStyle = fontColor;
+                ctx.textAlign = "center";
+                ctx.fillText("Scan To Order", 520, 700);
+
+                // Load Brand image
+                var qr_image = new Image();
+                qr_image.src = merchant_qr_code;
+                qr_image.crossOrigin = "anonymous";
+
+                // When the image has loaded, draw it onto the canvas with fitting
+                qr_image.onload = function () {
+                  // Calculate dimensions to fit the image within the specified area
+                  var aspectRatio = qr_image.width / qr_image.height;
+                  var maxWidth = 109; // Maximum width
+                  var maxHeight = 109; // Maximum height
+                  var width = maxWidth;
+                  var height = width / aspectRatio;
+
+                  if (height > maxHeight) {
+                    height = maxHeight;
+                    width = height * aspectRatio;
+                  }
+
+                  var x = 470 + (maxWidth - width) / 2; // Center horizontally
+                  var y = 715 + (maxHeight - height) / 2; // Center vertically
+
+                  // Draw the image
+                  ctx.drawImage(qr_image, x, y, width, height);
+                };
+              };
+            };
+
+            var createFlyer5 = () => {
+              // Get the canvas element and its context
+              var canvas = document.getElementById("myCanvas");
+              var ctx = canvas.getContext("2d");
+
+
+              // Calculate brightness of background color
+              function calculateBrightness(hex) {
+                // Convert hex color to RGB
+                var r = parseInt(hex.substring(1, 3), 16);
+                var g = parseInt(hex.substring(3, 5), 16);
+                var b = parseInt(hex.substring(5, 7), 16);
+                // Calculate brightness using the luminance formula
+                return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+              }
+
+              // Determine font color based on background color brightness
+              var fontColor;
+              if (calculateBrightness(merchant_color) > 0.5) {
+                // If background is bright, set font color to black
+                fontColor = "#0f0f0f";
+              } else {
+                // If background is dark, set font color to white
+                fontColor = "#f0f0f0";
+              }
+
+              // Set font color
+              ctx.fillStyle = fontColor;
+
+              // Load background image
+              var backgroundImage = new Image();
+              backgroundImage.src = "https://applova-sys-i1.s3.amazonaws.com/images/65_36962431/business/splash-screen.jpg?time=1718228023498";
+              backgroundImage.crossOrigin = "anonymous";
+
+              // When the background image is loaded, draw it onto the canvas
+              backgroundImage.onload = function () {
+                ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+                // Draw semi-transparent black rectangle covering the canvas
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw square graphic with white border and rounded corners
+                var squareWidth = 515;
+                var squareHeight = 762;
+                var squareX = (canvas.width - squareWidth) / 2;
+                var squareY = (canvas.height - squareHeight) / 2;
+                var cornerRadius = 10; // Adjust this value for the desired roundedness
+                var borderWidth = 5;
+
+                // Draw transparent fill color
+                ctx.fillStyle = "rgba(255, 255, 255, 0)"; // Transparent white
+                ctx.fillRect(squareX, squareY, squareWidth, squareHeight);
+
+                // Draw white border with rounded corners
+                ctx.strokeStyle = merchant_color; // White
+                ctx.lineWidth = borderWidth;
+                ctx.beginPath();
+                ctx.moveTo(squareX + cornerRadius, squareY);
+                ctx.arcTo(
+                  squareX + squareWidth,
+                  squareY,
+                  squareX + squareWidth,
+                  squareY + squareHeight,
+                  cornerRadius
+                );
+                ctx.arcTo(
+                  squareX + squareWidth,
+                  squareY + squareHeight,
+                  squareX,
+                  squareY + squareHeight,
+                  cornerRadius
+                );
+                ctx.arcTo(
+                  squareX,
+                  squareY + squareHeight,
+                  squareX,
+                  squareY,
+                  cornerRadius
+                );
+                ctx.arcTo(
+                  squareX,
+                  squareY,
+                  squareX + squareWidth,
+                  squareY,
+                  cornerRadius
+                );
+                ctx.closePath();
+                ctx.stroke();
+
+                // Load Brand image
+                var image = new Image();
+                image.src = merchant_logo;
+                image.crossOrigin = "anonymous";
+
+                // When the image has loaded, draw it onto the canvas with fitting
+                image.onload = function () {
+                  // Calculate dimensions to fit the image within the specified area
+                  var aspectRatio = image.width / image.height;
+                  var maxWidth = 109; // Maximum width
+                  var maxHeight = 109; // Maximum height
+                  var width = maxWidth;
+                  var height = width / aspectRatio;
+
+                  if (height > maxHeight) {
+                    height = maxHeight;
+                    width = height * aspectRatio;
+                  }
+
+                  var x = 252 + (maxWidth - width) / 2; // Center horizontally
+                  var y = 50 + (maxHeight - height) / 2; // Center vertically
+
+                  // Draw the image
+                  ctx.drawImage(image, x, y, width, height);
+                };
+
+                // Add text "Merchant Name"
+                var text_name = merchant_name;
+
+                ctx.font = "bold 24px Raleway"; // Font style
+                ctx.fillStyle = "#f0f0f0"; // Text color
+                ctx.textAlign = "center"; //Text Align center
+                ctx.fillText(text_name, 305, 185); // Text and position
+
+                // Add main tagline with automatic line break
+                var main_text = main_tagline;
+                var maxWidth = 210; // Maximum width for the text
+                var lineHeight = 45; // Line height (font size)
+
+                var words = main_text.split(" ");
+                var line = "";
+                var lines = [];
+
+                for (var i = 0; i < words.length; i++) {
+                  var testLine = line + words[i] + " ";
+                  var metrics = ctx.measureText(testLine);
+                  var testWidth = metrics.width;
+                  if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                lines.push(line);
+
+                ctx.font = "900 50px Montserrat"; // Font style
+                ctx.fillStyle = merchant_color; // Text color
+                ctx.textAlign = "center"; // Align text to the center
+
+                if (words.length > 4) {
+            lineHeight = 38;
+            ctx.font = "900 45px Montserrat"; // Font style
+          }
+
+                var textY = 230;
+                for (var j = 0; j < lines.length; j++) {
+                  ctx.fillText(lines[j], 310, textY);
+                  textY += lineHeight;
+                }
+
+                // Add secondary tagline with automatic line break
+                var secondary_text = secondary_tagline;
+                var maxWidth = 1200; // Maximum width for the text
+                var lineHeight = 30; // Line height (font size)
+
+                var words = secondary_text.split(" ");
+                var line = "";
+                var lines = [];
+
+                for (var i = 0; i < words.length; i++) {
+                  var testLine = line + words[i] + " ";
+                  var metrics = ctx.measureText(testLine);
+                  var testWidth = metrics.width;
+                  if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                lines.push(line);
+
+                ctx.font = "500 26px Raleway"; // Font style
+                ctx.fillStyle = "#f0f0f0"; // Text color
+                ctx.textAlign = "center"; // Align text to the center
+
+                var textY = 360;
+                for (var j = 0; j < lines.length; j++) {
+                  ctx.fillText(lines[j], 308, textY);
+                  textY += lineHeight;
+                }
+
+                // Use promo code text snippet
+                ctx.font = "900 28px Raleway"; //Font style
+                ctx.fillStyle = "#f0f0f0";
+                ctx.textAlign = "center";
+                ctx.fillText("Use the Promo Code", 305, 433);
+
+                // Add promo code
+                ctx.font = "900 40px Montserrat"; //Font style
+                ctx.fillStyle = merchant_color;
+                ctx.textAlign = "center";
+                ctx.fillText(promocode, 305, 473);
+
+                // Scan To Order text snippet
+                ctx.font = "500 18px Raleway"; //Font style
+                ctx.fillStyle = "#f0f0f0";
+                ctx.textAlign = "center";
+                ctx.fillText("Scan To Order", 299, 515);
+
+                // Load QR image
+                var qr_image = new Image();
+                qr_image.crossOrigin = "anonymous";
+
+                // When the image has loaded, draw it onto the canvas with fitting
+                qr_image.onload = function () {
+                  // Calculate dimensions to fit the image within the specified area
+                  var aspectRatio = qr_image.width / qr_image.height;
+                  var maxWidth = 138; // Maximum width
+                  var maxHeight = 138; // Maximum height
+                  var width = maxWidth;
+                  var height = width / aspectRatio;
+
+                  if (height > maxHeight) {
+                    height = maxHeight;
+                    width = height * aspectRatio;
+                  }
+
+                  var x = 232 + (maxWidth - width) / 2; // Center horizontally
+                  var y = 530 + (maxHeight - height) / 2; // Center vertically
+
+                  // Draw the image
+                  ctx.drawImage(qr_image, x, y, width, height);
+                };
+                qr_image.src = merchant_qr_code;
+
+                // Add tertiary tagline with automatic line break
+                var tertiary = tertiary_tagline;
+                var maxWidth = 600; // Maximum width for the text
+                var lineHeight = 28; // Line height (font size)
+
+                var words = tertiary.split(" ");
+                var line = "";
+                var lines = [];
+
+                for (var i = 0; i < words.length; i++) {
+                  var testLine = line + words[i] + " ";
+                  var metrics = ctx.measureText(testLine);
+                  var testWidth = metrics.width;
+                  if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + " ";
+                  } else {
+                    line = testLine;
+                  }
+                }
+                lines.push(line);
+
+                ctx.font = "700 18px Raleway"; // Font style
+                ctx.fillStyle = merchant_color; // Text color
+                ctx.textAlign = "center"; // Align text to the center
+
+                var textY = 720;
+                for (var j = 0; j < lines.length; j++) {
+                  ctx.fillText(lines[j], 305, textY);
+                  textY += lineHeight;
+                }
+
+                // Powered by text snippet
+                ctx.font = "900 12px Raleway"; //Font style
+                ctx.fillStyle = "#f0f0f0";
+                ctx.textAlign = "center";
+                ctx.fillText("Powered by", 268, 770);
+
+                // Create new image element
+                var logoImage = new Image();
+                logoImage.crossOrigin = "anonymous";
+
+                // Set image source
+                logoImage.src =
+                  "https://ik.imagekit.io/q3dh9z72h/images/test/applova-logo-white.png?updatedAt=1700027708323";
+
+                // When the image is loaded, draw it onto the canvas
+                logoImage.onload = function () {
+                  // Calculate aspect ratio of the image
+                  var aspectRatio = logoImage.width / logoImage.height;
+
+                  // Calculate maximum width and height based on aspect ratio and desired height
+                  var maxHeight = 24;
+                  var maxWidth = maxHeight * aspectRatio;
+
+                  // Draw the image onto the canvas with the specified position and dimensions
+                  ctx.drawImage(logoImage, 305, 753, maxWidth, maxHeight);
+                };
+              };
+            };
+
+      var createFlyer6 = () => {
+        // Get the canvas element and its context
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        // Variables to be replaced according to user details
+        var merchant_color = "#0A3161";
+
+        // Set canvas background color
+        ctx.fillStyle = merchant_color;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Load Brand image
+        var image = new Image();
+        image.src = merchant_logo;
+        image.crossOrigin = "anonymous";
+
+        // When the image has loaded, draw it onto the canvas with fitting
+        image.onload = function () {
+          // Calculate dimensions to fit the image within the specified area
+          var aspectRatio = image.width / image.height;
+          var maxWidth = 109; // Maximum width
+          var maxHeight = 109; // Maximum height
+          var width = maxWidth;
+          var height = width / aspectRatio;
+
+          if (height > maxHeight) {
+            height = maxHeight;
+            width = height * aspectRatio;
+          }
+
+          var x = 40 + (maxWidth - width) / 2; // Center horizontally
+          var y = 30 + (maxHeight - height) / 2; // Center vertically
+
+          // Draw the image
+          ctx.drawImage(image, x, y, width, height);
+        };
+
+        // Add main tagline with automatic line break
+        var main_text = main_tagline;
+        var maxWidth = 58; // Maximum width for the text
+        var lineHeight = 62; // Line height (font size)
+
+        var words = main_text.split(" ");
+        var line = "";
+        var lines = [];
+
+        var size = "s";
+        for (var i = 0; i < words.length; i++) {
+          var testLine = line + words[i] + " ";
+          var metrics = ctx.measureText(testLine);
+          var testWidth = metrics.width;
+          if (testWidth > maxWidth && i > 0) {
+            if (ctx.measureText(line).width > 57) size = "l";
+            else if (ctx.measureText(line).width > 45) size = "m";
+            lines.push(line);
+            line = words[i] + " ";
+          } else {
+            line = testLine;
+          }
+        }
+        lines.push(line);
+
+        if (size === "s") ctx.font = "900 52px Montserrat"; // Font style
+        else if (size === "m"){
+          ctx.font = "900 40px Montserrat";
+          lineHeight = 50;
+        }
+        else if (size === "l"){
+          ctx.font = "900 30px Montserrat";
+          lineHeight = 42;
+        }
+        ctx.fillStyle = "#fefefe"; // Text color
+        ctx.textAlign = "left"; // Align text to the center
+
+        var textY = 195;
+        for (var j = 0; j < lines.length; j++) {
+          ctx.fillText(lines[j], 40, textY);
+          textY += lineHeight;
+        }
+
+        // Add secondary tagline with automatic line break
+        var secondary_text = secondary_tagline;
+        var maxWidth = 900; // Maximum width for the text
+        var lineHeight = 30; // Line height (font size)
+
+        var words = secondary_text.split(" ");
+        var line = "";
+        var lines = [];
+
+        for (var i = 0; i < words.length; i++) {
+          var testLine = line + words[i] + " ";
+          var metrics = ctx.measureText(testLine);
+          var testWidth = metrics.width;
+          if (testWidth > maxWidth && i > 0) {
+            lines.push(line);
+            line = words[i] + " ";
+          } else {
+            line = testLine;
+          }
+        }
+        lines.push(line);
+
+        ctx.font = "500 24px Raleway"; // Font style
+        ctx.fillStyle = "#fefefe"; // Text color
+        ctx.textAlign = "left"; // Align text to the center
+
+        var textY = 365;
+        for (var j = 0; j < lines.length; j++) {
+          ctx.fillText(lines[j], 42, textY);
+          textY += lineHeight;
+        }
+
+        // Use promo code text snippet
+        ctx.font = "900 22px Raleway"; //Font style
+        ctx.fillStyle = "#fefefe";
+        ctx.textAlign = "left";
+        ctx.fillText("Use the Promo Code", 40, 470);
+
+        // Add promo code
+        ctx.font = "900 32px Montserrat"; //Font style
+        ctx.fillStyle = "#fefefe";
+        ctx.textAlign = "left";
+        ctx.fillText(promocode, 40, 510);
+
+        // Scan To Order text snippet
+        ctx.font = "600 18px Raleway"; //Font style
+        ctx.fillStyle = "#fefefe";
+        ctx.textAlign = "left";
+        ctx.fillText("Scan To Order", 40, 555);
+
+        // Load QR image
+        var qr_image = new Image();
+
+        // When the image has loaded, draw it onto the canvas with fitting
+        qr_image.onload = function () {
+          // Calculate dimensions to fit the image within the specified area
+          var aspectRatio = qr_image.width / qr_image.height;
+          var maxWidth = 138; // Maximum width
+          var maxHeight = 138; // Maximum height
+          var width = maxWidth;
+          var height = width / aspectRatio;
+
+          if (height > maxHeight) {
+            height = maxHeight;
+            width = height * aspectRatio;
+          }
+
+          var x = 40 + (maxWidth - width) / 2; // Center horizontally
+          var y = 570 + (maxHeight - height) / 2; // Center vertically
+
+          // Draw the image
+          ctx.drawImage(qr_image, x, y, width, height);
+        };
+        qr_image.src = merchant_qr_code;
+        qr_image.crossOrigin = "anonymous";
+
+        // Add tertiary tagline with automatic line break
+        var tertiary = tertiary_tagline;
+        var maxWidth = 250; // Maximum width for the text
+        var lineHeight = 28; // Line height (font size)
+
+        var words = tertiary.split(" ");
+        var line = "";
+        var lines = [];
+
+        for (var i = 0; i < words.length; i++) {
+          var testLine = line + words[i] + " ";
+          var metrics = ctx.measureText(testLine);
+          var testWidth = metrics.width;
+          if (testWidth > maxWidth && i > 0) {
+            lines.push(line);
+            line = words[i] + " ";
+          } else {
+            line = testLine;
+          }
+        }
+        lines.push(line);
+
+        ctx.font = "700 18px Raleway"; // Font style
+        ctx.fillStyle = "#fefefe"; // Text color
+        ctx.textAlign = "left"; // Align text to the center
+
+        var textY = 755;
+        for (var j = 0; j < lines.length; j++) {
+          ctx.fillText(lines[j], 40, textY);
+          textY += lineHeight;
+        }
+
+        // Powered by text snippet
+        ctx.font = "600 12px Raleway"; //Font style
+        ctx.fillStyle = "#fefefe";
+        ctx.textAlign = "left";
+        ctx.fillText("Powered by", 40, 810);
+
+        // Create new image element
+        var logoImage = new Image();
+
+        // Set image source
+        logoImage.src =
+          "https://ik.imagekit.io/q3dh9z72h/images/test/applova-logo-white.png?updatedAt=1700027708323";
+        logoImage.crossOrigin = "anonymous";
+
+        // When the image is loaded, draw it onto the canvas
+        logoImage.onload = function () {
+          // Calculate aspect ratio of the image
+          var aspectRatio = logoImage.width / logoImage.height;
+
+          // Calculate maximum width and height based on aspect ratio and desired height
+          var maxHeight = 24;
+          var maxWidth = maxHeight * aspectRatio;
+
+          // Draw the image onto the canvas with the specified position and dimensions
+          ctx.drawImage(logoImage, 113, 793, maxWidth, maxHeight);
+        };
+
+        // Draw a custom-sized image at a specified position
+        drawCustomImage(
+          "https://ik.imagekit.io/q3dh9z72h/test/Frame%20544.png?updatedAt=1714727462355",
+          235,
+          395,
+          500,
+          450
+        ); // Custom Image
+
+        // Function to draw a custom-sized image at a specified position
+        function drawCustomImage(imageUrl, x, y, width, height) {
+          // Load the image
+          var image = new Image();
+          image.src = imageUrl;
+          image.crossOrigin = "anonymous";
+
+          // When the image is loaded, draw it onto the canvas
+          image.onload = function () {
+            ctx.drawImage(image, x, y, width, height);
+          };
+        }
+
+        // Function to draw a rounded image that fills a circular clipping area
+        function drawRoundedImage(imageUrl, x, y, diameter) {
+          // Load the image
+          var image = new Image();
+          image.crossOrigin = "anonymous"; // Enable CORS to prevent tainted canvas (for external images)
+          image.src = imageUrl;
+
+          // When the image is loaded, draw it onto the canvas
+          image.onload = function () {
+            // Calculate the scale factor to fit the image within the circle
+            var scale = diameter / Math.min(image.width, image.height);
+
+            // Calculate the scaled dimensions of the image
+            var scaledWidth = image.width * scale;
+            var scaledHeight = image.height * scale;
+
+            // Calculate the position to center the scaled image within the circle
+            var offsetX = x - (scaledWidth - diameter) / 2;
+            var offsetY = y - (scaledHeight - diameter) / 2;
+
+            // Set the canvas clipping path to a circle
+            ctx.save(); // Save the current context state
+            ctx.beginPath();
+            ctx.arc(
+              x + diameter / 2,
+              y + diameter / 2,
+              diameter / 2,
+              0,
+              Math.PI * 2
+            );
+            ctx.clip(); // Clip the canvas to the defined circle
+
+            // Draw the scaled image inside the clipped circle
+            ctx.drawImage(image, offsetX, offsetY, scaledWidth, scaledHeight);
+
+            // Restore the canvas to its original state (removes the clipping path)
+            ctx.restore();
+          };
+        }
+
+        // Usage example: Draw a rounded image that fills a circular clipping area
+        var imageUrl = "https://applova-sys-i1.s3.amazonaws.com/images/65_36962431/business/splash-screen.jpg?time=1718228023498";
+        var x = 300; // X-coordinate of the circle's center
+        var y = -150; // Y-coordinate of the circle's center
+        var diameter = 460; // Diameter of the circular clipping area
+
+        drawRoundedImage(imageUrl, x, y, diameter);
+      };
+
+
+      var createFlyer7 = () => {
+
+         // Get the canvas element and its context
+         var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        // Variables to be replaced according to user details
+
+        var merchant_color = "#0A3161";
+
+        // Calculate brightness of background color
+        function calculateBrightness(hex) {
+          // Convert hex color to RGB
+          var r = parseInt(hex.substring(1, 3), 16);
+          var g = parseInt(hex.substring(3, 5), 16);
+          var b = parseInt(hex.substring(5, 7), 16);
+          // Calculate brightness using the luminance formula
+          return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        }
+
+        // Determine font color based on background color brightness
+        var fontColor;
+        if (calculateBrightness(merchant_color) > 0.5) {
+          // If background is bright, set font color to black
+          fontColor = "#0f0f0f";
+        } else {
+          // If background is dark, set font color to white
+          fontColor = "#f0f0f0";
+        }
+
+        // Set font color
+        ctx.fillStyle = fontColor;
+
+        // Load background image
+        var bgImage = "https://applova-sys-i1.s3.amazonaws.com/images/65_36962431/business/splash-screen.jpg?time=1718228023498";
+        var backgroundImage = new Image();
+        backgroundImage.src = bgImage;
+        backgroundImage.crossOrigin = "anonymous";
+
+        // When the background image is loaded, draw it onto the canvas
+        backgroundImage.onload = function () {
+          ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+          // Draw semi-transparent black rectangle covering the canvas
+          // ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+          // ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Draw rounded rectangle on top of the background image
+          var rectX = 82; // X-coordinate of the top-left corner of the rectangle
+          var rectY = -30; // Y-coordinate of the top-left corner of the rectangle
+          var rectWidth = 431; // Width of the rectangle
+          var rectHeight = 730; // Height of the rectangle
+          var cornerRadius = 20; // Radius for the rounded corners
+
+          // Draw the rounded rectangle
+          ctx.beginPath();
+          ctx.moveTo(rectX + cornerRadius, rectY); // Move to top-left corner
+          ctx.lineTo(rectX + rectWidth - cornerRadius, rectY); // Draw top line
+          ctx.arcTo(
+            rectX + rectWidth,
+            rectY,
+            rectX + rectWidth,
+            rectY + cornerRadius,
+            cornerRadius
+          ); // Draw top-right corner
+          ctx.lineTo(rectX + rectWidth, rectY + rectHeight - cornerRadius); // Draw right line
+          ctx.arcTo(
+            rectX + rectWidth,
+            rectY + rectHeight,
+            rectX + rectWidth - cornerRadius,
+            rectY + rectHeight,
+            cornerRadius
+          ); // Draw bottom-right corner
+          ctx.lineTo(rectX + cornerRadius, rectY + rectHeight); // Draw bottom line
+          ctx.arcTo(
+            rectX,
+            rectY + rectHeight,
+            rectX,
+            rectY + rectHeight - cornerRadius,
+            cornerRadius
+          ); // Draw bottom-left corner
+          ctx.lineTo(rectX, rectY + cornerRadius); // Draw left line
+          ctx.arcTo(rectX, rectY, rectX + cornerRadius, rectY, cornerRadius); // Draw top-left corner
+          ctx.closePath();
+
+          ctx.fillStyle = merchant_color;
+          ctx.fill();
+
+          // Draw first image
+          drawImage(
+            "https://ik.imagekit.io/q3dh9z72h/test/Rectangle%2056.png?updatedAt=1714723557870",
+            82,
+            0,
+            25,
+            700
+          ); // Image 1
+
+          // Draw second image
+          drawImage(
+            "https://ik.imagekit.io/q3dh9z72h/test/Rectangle%2056.png?updatedAt=1714723557870",
+            489,
+            0,
+            25,
+            700
+          ); // Image 2
+
+          // Function to draw an image at a specified position and size
+          function drawImage(imageUrl, x, y, width, height) {
+            // Load the image
+            var image = new Image();
+            image.src = imageUrl;
+            image.crossOrigin = "anonymous";
+
+            // When the image is loaded, draw it onto the canvas
+            image.onload = function () {
+              ctx.drawImage(image, x, y, width, height);
+            };
+          }
+
+          // Draw a custom-sized image at a specified position
+          drawCustomImage(
+            "https://ik.imagekit.io/q3dh9z72h/test/pngwing.com%20(1).png?updatedAt=1714724695147",
+            -40,
+            600,
+            800,
+            500
+          ); // Custom Image
+
+          // Function to draw a custom-sized image at a specified position
+          function drawCustomImage(imageUrl, x, y, width, height) {
+            // Load the image
+            var image = new Image();
+            image.src = imageUrl;
+            image.crossOrigin = "anonymous";
+
+            // When the image is loaded, draw it onto the canvas
+            image.onload = function () {
+              ctx.drawImage(image, x, y, width, height);
+            };
+          }
+
+          // Load Brand image
+          var image = new Image();
+          image.src = merchant_logo;
+          image.crossOrigin = "anonymous";
+
+          // When the image has loaded, draw it onto the canvas with fitting
+          image.onload = function () {
+            // Calculate dimensions to fit the image within the specified area
+            var aspectRatio = image.width / image.height;
+            var maxWidth = 109; // Maximum width
+            var maxHeight = 109; // Maximum height
+            var width = maxWidth;
+            var height = width / aspectRatio;
+
+            if (height > maxHeight) {
+              height = maxHeight;
+              width = height * aspectRatio;
+            }
+
+            var x = 252 + (maxWidth - width) / 2; // Center horizontally
+            var y = 20 + (maxHeight - height) / 2; // Center vertically
+
+            // Draw the image
+            ctx.drawImage(image, x, y, width, height);
+          };
+
+          // Add main tagline with automatic line break
+          var main_text = main_tagline;
+          var maxWidth = 80; // Maximum width for the text
+          var lineHeight = 42; // Line height (font size)
+
+          var words = main_text.split(" ");
+          var line = "";
+          var lines = [];
+
+          for (var i = 0; i < words.length; i++) {
+            var testLine = line + words[i] + " ";
+            var metrics = ctx.measureText(testLine);
+            var testWidth = metrics.width;
+            if (testWidth > maxWidth && i > 0) {
+              lines.push(line);
+              line = words[i] + " ";
+            } else {
+              line = testLine;
+            }
+          }
+          lines.push(line);
+
+          ctx.font = "900 36px Montserrat"; // Font style
+          ctx.fillStyle = fontColor; // Text color
+          ctx.textAlign = "center"; // Align text to the center
+
+          var textY = 170;
+          for (var j = 0; j < lines.length; j++) {
+            ctx.fillText(lines[j], 310, textY);
+            textY += lineHeight;
+          }
+
+          // Add secondary tagline with automatic line break
+          var secondary_text = secondary_tagline;
+          var maxWidth = 700; // Maximum width for the text
+          var lineHeight = 30; // Line height (font size)
+
+          var words = secondary_text.split(" ");
+          var line = "";
+          var lines = [];
+
+          for (var i = 0; i < words.length; i++) {
+            var testLine = line + words[i] + " ";
+            var metrics = ctx.measureText(testLine);
+            var testWidth = metrics.width;
+            if (testWidth > maxWidth && i > 0) {
+              lines.push(line);
+              line = words[i] + " ";
+            } else {
+              line = testLine;
+            }
+          }
+          lines.push(line);
+
+          ctx.font = "500 20px Raleway"; // Font style
+          ctx.fillStyle = fontColor; // Text color
+          ctx.textAlign = "center"; // Align text to the center
+
+          var textY = 285;
+          for (var j = 0; j < lines.length; j++) {
+            ctx.fillText(lines[j], 308, textY);
+            textY += lineHeight;
+          }
+
+          // Use promo code text snippet
+          ctx.font = "900 22px Raleway"; //Font style
+          ctx.fillStyle = fontColor;
+          ctx.textAlign = "center";
+          ctx.fillText("Use the Promo Code", 305, 350);
+
+          // Add promo code
+          ctx.font = "900 32px Montserrat"; //Font style
+          ctx.fillStyle = fontColor;
+          ctx.textAlign = "center";
+          ctx.fillText(promocode, 305, 390);
+
+          // Scan To Order text snippet
+          ctx.font = "900 18px Raleway"; //Font style
+          ctx.fillStyle = fontColor;
+          ctx.textAlign = "center";
+          ctx.fillText("Scan To Order", 299, 430);
+
+          // Load QR image
+          var qr_image = new Image();
+
+          // When the image has loaded, draw it onto the canvas with fitting
+          qr_image.onload = function () {
+            // Calculate dimensions to fit the image within the specified area
+            var aspectRatio = qr_image.width / qr_image.height;
+            var maxWidth = 128; // Maximum width
+            var maxHeight = 128; // Maximum height
+            var width = maxWidth;
+            var height = width / aspectRatio;
+
+            if (height > maxHeight) {
+              height = maxHeight;
+              width = height * aspectRatio;
+            }
+
+            var x = 235 + (maxWidth - width) / 2; // Center horizontally
+            var y = 445 + (maxHeight - height) / 2; // Center vertically
+
+            // Draw the image
+            ctx.drawImage(qr_image, x, y, width, height);
+          };
+          qr_image.src = merchant_qr_code;
+          qr_image.crossOrigin = "anonymous";
+
+          // Add tertiary tagline with automatic line break
+          var tertiary = tertiary_tagline;
+          var maxWidth = 500; // Maximum width for the text
+          var lineHeight = 28; // Line height (font size)
+
+          var words = tertiary.split(" ");
+          var line = "";
+          var lines = [];
+
+          for (var i = 0; i < words.length; i++) {
+            var testLine = line + words[i] + " ";
+            var metrics = ctx.measureText(testLine);
+            var testWidth = metrics.width;
+            if (testWidth > maxWidth && i > 0) {
+              lines.push(line);
+              line = words[i] + " ";
+            } else {
+              line = testLine;
+            }
+          }
+          lines.push(line);
+
+          ctx.font = "700 14px Raleway"; // Font style
+          ctx.fillStyle = fontColor; // Text color
+          ctx.textAlign = "center"; // Align text to the center
+
+          var textY = 620;
+          for (var j = 0; j < lines.length; j++) {
+            ctx.fillText(lines[j], 305, textY);
+            textY += lineHeight;
+          }
+
+          // Powered by text snippet
+          ctx.font = "900 12px Raleway"; //Font style
+          ctx.fillStyle = fontColor;
+          ctx.textAlign = "center";
+          ctx.fillText("Powered by", 268, 670);
+
+          // Load image based on the brightness of merchant_color
+          var imageUrl;
+          if (calculateBrightness(merchant_color) > 0.5) {
+            // If background is bright, load black logo
+            imageUrl =
+              "https://ik.imagekit.io/q3dh9z72h/test/applova-logo-black.png?updatedAt=1708068935048";
+          } else {
+            // If background is dark, load white logo
+            imageUrl =
+              "https://ik.imagekit.io/q3dh9z72h/images/test/applova-logo-white.png?updatedAt=1700027708323";
+          }
+
+          // Create new image element
+          var logoImage = new Image();
+
+          // Set image source
+          logoImage.src = imageUrl;
+          logoImage.crossOrigin = "anonymous";
+
+          // When the image is loaded, draw it onto the canvas
+          logoImage.onload = function () {
+            // Calculate aspect ratio of the image
+            var aspectRatio = logoImage.width / logoImage.height;
+
+            // Calculate maximum width and height based on aspect ratio and desired height
+            var maxHeight = 24;
+            var maxWidth = maxHeight * aspectRatio;
+
+            // Draw the image onto the canvas with the specified position and dimensions
+            ctx.drawImage(logoImage, 305, 653, maxWidth, maxHeight);
+          };
+        };
+
+      };
+
+            function changeMainTagline(value) {
+              main_tagline = value;
+              createFlyer6();
+            }
+
+            function changeSecondaryTagline(value) {
+              secondary_tagline = value;
+              createFlyer6();
+            }
+
+
+
+            setTimeout(createFlyer6, "2000");
+            window.addEventListener('load', function() {
+              setTimeout(createFlyer6, "2000");
+              })
+            // createFlyer6;
+
+            let download = document.getElementById("downloadBtn");
+            download.addEventListener("click", downloadImage);
+
+        //     document.querySelector('.backBtn').addEventListener('click', function() {
+        //   // Redirect to the specific HTML page
+        //       window.top.location.reload();
+        // });
+
+            //   let regenerate = document.getElementById("regenerate");
+            //   regenerate.addEventListener("click", () => {
+            //     url = new URL(document.location.href);
+            //     url.searchParams.delete("custom_heading");
+            //     document.location.href = url;
+            //   });
+
+
+
+            document.getElementById("shareIcon").addEventListener("click", function () {
+          var canvas = document.getElementById("myCanvas");
+
+          canvas.toBlob(function (blob) {
+              var formData = new FormData();
+              formData.append("file", blob, "canvas_image.jpg");
+
+              fetch("https://tb-services.applova.io/chatbot-gw/flyer/upload", {
+                  method: "POST",
+                  body: formData,
+              })
+                  .then((response) => response.json())
+                  .then((data) => {
+                      if (data.url) {
+                          var imageURL = data.url;
+
+                          // option 2
+                          var url =
+                              "https://www.facebook.com/sharer.php?u=" + encodeURIComponent(imageURL);
+
+                          // // option 2 docs https://developers.facebook.com/docs/sharing/reference/feed-dialog
+
+                          // var url = `https://www.facebook.com/dialog/feed?&link=${encodeURIComponent(
+                          //     imageURL
+                          // )}`;
+
+                          // Open Facebook's Share Dialog
+                          var windowFeatures =
+                              "menubar=no,location=no,resizable=yes,scrollbars=yes,status=no,width=600,height=840";
+                          window.open(url, "_blank", windowFeatures);
+                      }
+                  });
+          });
+      });
+    </script>
+  </body>
+</html>

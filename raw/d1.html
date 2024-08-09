@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: "Raleway", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+      .edit-canvas {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #myCanvas {
+        padding: 0;
+        margin-bottom: 20px;
+      }
+      .floating-window {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 300px;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        z-index: 1000;
+        cursor: move;
+      }
+      .floating-window-header {
+        background: #3284ff;
+        color: white;
+        padding: 10px;
+        cursor: move;
+        border-radius: 5px 5px 0 0;
+      }
+      .floating-window-body {
+        padding: 10px;
+      }
+      .floating-window table {
+        width: 100%;
+      }
+      .floating-window table input[type="text"],
+      .floating-window table input[type="color"],
+      .floating-window table input[type="file"] {
+        width: 100%;
+        padding: 5px;
+        margin: 5px 0;
+        border: 1px solid #3284ff;
+        border-radius: 3px;
+        font-size: 1rem;
+      }
+      .floating-window table input[type="color"] {
+        padding: 0;
+        height: 30px;
+      }
+      .preview-footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .download {
+        padding: 10px 20px;
+        border-radius: 100px;
+        border: none;
+        background-color: #3284ff;
+        color: #ffffff;
+        font-weight: 400;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+    </style>
+    <link rel="preload" href="/static/fonts.css" as="style" />
+    <link rel="stylesheet" href="/static/fonts.css" />
+  </head>
+  <body>
+    <div class="edit-canvas">
+      <canvas id="myCanvas" width="1280" height="720"></canvas>
+    </div>
+    <div class="floating-window" id="floatingWindow">
+      <div class="floating-window-header" id="floatingWindowHeader">
+        Customize
+      </div>
+      <div class="floating-window-body">
+        <table>
+          <tr>
+            <td><label for="tagline01">Tagline 01:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Professional"
+                id="tagline01"
+                name="tagline01"
+                value="Professional"
+                maxlength="30"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="tagline02">Tagline 02:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="YOUTUBE"
+                id="tagline02"
+                name="tagline02"
+                value="YOUTUBE"
+                maxlength="55"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="tagline03">Tagline 03:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="THUMBNAIL"
+                id="tagline03"
+                name="tagline03"
+                value="THUMBNAIL"
+                maxlength="55"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="tagline04">Tagline 04:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Valid until 2nd of September"
+                id="tagline04"
+                name="tagline04"
+                value="Valid until 2nd of September"
+                maxlength="55"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="imageURL">Image URL:</label></td>
+            <td>
+              <input
+                type="text"
+                placeholder="Enter image URL"
+                id="imageURL"
+                name="imageURL"
+                value=""
+                maxlength="255"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="imageFile">Upload Image:</label></td>
+            <td>
+              <input
+                type="file"
+                id="imageFile"
+                name="imageFile"
+                accept="image/*"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="bgColor">Background Color:</label></td>
+            <td>
+              <input type="color" id="bgColor" name="bgColor" value="#FFCC00" />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="bannerColor">Banner Color:</label></td>
+            <td>
+              <input
+                type="color"
+                id="bannerColor"
+                name="bannerColor"
+                value="#000000"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="textColor">Text Color:</label></td>
+            <td>
+              <input
+                type="color"
+                id="textColor"
+                name="textColor"
+                value="#FFFFFF"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="circleColor">Circle Color:</label></td>
+            <td>
+              <input
+                type="color"
+                id="circleColor"
+                name="circleColor"
+                value="#FF0000"
+              />
+            </td>
+          </tr>
+        </table>
+        <label for="formatSelect">Select Format:</label>
+        <select id="formatSelect">
+          <option value="png">PNG</option>
+          <option value="jpg">JPG</option>
+        </select>
+        <button class="download" id="downloadBtn">Download</button>
+      </div>
+    </div>
+    <script>
+      var main_tagline = "Professional";
+      var secondary_tagline = "YOUTUBE";
+      var third_tagline = "THUMBNAIL";
+      var tertiary_tagline = "Valid until 2nd of September";
+      var image_url = "";
+      var bgColor = "#FFCC00";
+      var bannerColor = "#000000";
+      var textColor = "#FFFFFF";
+      var circleColor = "#FF0000";
+      var uploadedImage = null;
+
+      function downloadImage() {
+        let canvas_d = document.getElementById("myCanvas");
+        let format = document.getElementById("formatSelect").value;
+        let dataURL = canvas_d.toDataURL(`image/${format}`);
+        let a = document.createElement("a");
+        a.href = dataURL;
+        a.download = `thumbnail.${format}`;
+        a.click();
+      }
+
+      var createFlyer12 = () => {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        // Get the current values from the input fields
+        main_tagline = document.getElementById("tagline01").value;
+        secondary_tagline = document.getElementById("tagline02").value;
+        third_tagline = document.getElementById("tagline03").value;
+        tertiary_tagline = document.getElementById("tagline04").value;
+        image_url = document.getElementById("imageURL").value;
+        bgColor = document.getElementById("bgColor").value;
+        bannerColor = document.getElementById("bannerColor").value;
+        textColor = document.getElementById("textColor").value;
+        circleColor = document.getElementById("circleColor").value;
+
+        // Draw background
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw black banner
+        ctx.fillStyle = bannerColor;
+        ctx.fillRect(0, canvas.height / 2 - 100, canvas.width, 200);
+
+        // Draw text on black banner
+        ctx.font = "bold 100px Montserrat";
+        ctx.fillStyle = textColor;
+        ctx.textAlign = "left";
+        ctx.fillText(secondary_tagline, 50, canvas.height / 2 - 20);
+        ctx.fillText(third_tagline, 50, canvas.height / 2 + 80);
+
+        // Draw 'Professional' text
+        ctx.font = "italic 60px Raleway";
+        ctx.fillText(main_tagline, 50, canvas.height / 2 - 140);
+
+        // Draw red circle on the right
+        ctx.beginPath();
+        ctx.arc(
+          canvas.width - 200,
+          canvas.height / 2,
+          300,
+          0,
+          Math.PI * 2,
+          true
+        );
+        ctx.closePath();
+        ctx.fillStyle = circleColor;
+        ctx.fill();
+
+        // Load and draw the image in the circle
+        var image = new Image();
+        if (uploadedImage) {
+          image.src = URL.createObjectURL(uploadedImage);
+        } else {
+          image.src = image_url;
+        }
+
+        image.onload = function () {
+          var x = canvas.width - 500;
+          var y = canvas.height / 2 - 300;
+          var diameter = 600;
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(
+            x + diameter / 2,
+            y + diameter / 2,
+            diameter / 2,
+            0,
+            Math.PI * 2,
+            true
+          );
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(image, x, y, diameter, diameter);
+          ctx.restore();
+        };
+
+        // Draw tertiary tagline
+        ctx.font = "16px Raleway";
+        ctx.fillText(tertiary_tagline, 50, canvas.height - 50);
+      };
+
+      // Add event listeners to the input fields to update the flyer on change
+      document
+        .getElementById("tagline01")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("tagline02")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("tagline03")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("tagline04")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("imageURL")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("imageFile")
+        .addEventListener("change", function (event) {
+          uploadedImage = event.target.files[0];
+          createFlyer12();
+        });
+      document
+        .getElementById("bgColor")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("bannerColor")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("textColor")
+        .addEventListener("input", createFlyer12);
+      document
+        .getElementById("circleColor")
+        .addEventListener("input", createFlyer12);
+
+      setTimeout(createFlyer12, 2000);
+      window.addEventListener("load", function () {
+        setTimeout(createFlyer12, 2000);
+      });
+
+      let download = document.getElementById("downloadBtn");
+      download.addEventListener("click", downloadImage);
+
+      // Drag and Drop functionality for the floating window
+      dragElement(document.getElementById("floatingWindow"));
+
+      function dragElement(elmnt) {
+        var pos1 = 0,
+          pos2 = 0,
+          pos3 = 0,
+          pos4 = 0;
+        if (document.getElementById(elmnt.id + "Header")) {
+          /* if present, the header is where you move the DIV from:*/
+          document.getElementById(elmnt.id + "Header").onmousedown =
+            dragMouseDown;
+        } else {
+          /* otherwise, move the DIV from anywhere inside the DIV:*/
+          elmnt.onmousedown = dragMouseDown;
+        }
+
+        function dragMouseDown(e) {
+          e = e || window.event;
+          e.preventDefault();
+          // get the mouse cursor position at startup:
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          document.onmouseup = closeDragElement;
+          // call a function whenever the cursor moves:
+          document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+          e = e || window.event;
+          e.preventDefault();
+          // calculate the new cursor position:
+          pos1 = pos3 - e.clientX;
+          pos2 = pos4 - e.clientY;
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          // set the element's new position:
+          elmnt.style.top = elmnt.offsetTop - pos2 + "px";
+          elmnt.style.left = elmnt.offsetLeft - pos1 + "px";
+        }
+
+        function closeDragElement() {
+          /* stop moving when mouse button is released:*/
+          document.onmouseup = null;
+          document.onmousemove = null;
+        }
+      }
+    </script>
+  </body>
+</html>

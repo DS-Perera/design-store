@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+      }
+      .edit-canvas-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* width: 90vw; Adjust width for desktop */
+        height: 90vh; /* Adjust height for desktop */
+        /* max-width: 90vw; */
+        max-height: 90vh;
+        margin-top: 3vh;
+      }
+      @media (max-width: 768px) {
+        .edit-canvas-container {
+          width: 90vw;
+          height: 90vw;
+          margin-top: 20vw;
+        }
+      }
+      #myCanvas {
+        width: 100%;
+        height: 100%;
+        max-width: 1000px;
+        max-height: 1000px;
+      }
+      .form-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        cursor: move; /* Added for draggable cursor */
+      }
+      .form-container h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #3284ff;
+      }
+      .background-color-picker,
+      .image-upload {
+        margin-top: 10px;
+      }
+      .background-color-picker input[type="color"],
+      .image-upload input[type="file"] {
+        width: 100%;
+        padding: 5px;
+        margin: 5px 0;
+        border: 1px solid #3284ff;
+        border-radius: 3px;
+        font-size: 1rem;
+      }
+      .download-button {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background-color: #ffc60a;
+        color: #000000;
+        font-size: 1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="edit-canvas-container">
+      <canvas id="myCanvas" width="1000" height="1000"></canvas>
+    </div>
+    <div class="form-container">
+      <h1 style="color: #ffc60a">SJB Photo Generator</h1>
+      <div class="background-color-picker" style="display: none">
+        <label for="backgroundColor">Background Color:</label>
+        <input
+          type="color"
+          id="backgroundColor"
+          name="backgroundColor"
+          value="#ffc60a"
+        />
+      </div>
+      <div class="image-upload">
+        <label for="imageUpload">Add Porfile Picture</label>
+        <input
+          type="file"
+          id="imageUpload"
+          name="imageUpload"
+          accept="image/*"
+        />
+      </div>
+    </div>
+    <button class="download-button" id="downloadBtn">Download</button>
+
+    <script>
+      let uploadedImage = null;
+
+      function drawOnCanvas(
+        backgroundColor = "#ffc60a",
+        showGradientBox = false
+      ) {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw the background gradient
+        var backgroundGradient = ctx.createLinearGradient(
+          0,
+          0,
+          canvas.width,
+          0
+        );
+        backgroundGradient.addColorStop(0, "#ffc60a"); // Starting color
+        backgroundGradient.addColorStop(1, "#019849"); // Ending color
+        ctx.fillStyle = backgroundGradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw the white circle
+        var circleSize = 800;
+        var circleX = (canvas.width - circleSize) / 2;
+        var circleY = 100; // 100px from the top
+        var circleRadius = circleSize / 2;
+
+        // Draw the circle (create a clipping path)
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(
+          circleX + circleRadius,
+          circleY + circleRadius,
+          circleRadius,
+          0,
+          2 * Math.PI
+        );
+        ctx.clip();
+
+        // Draw the white circle
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(circleX, circleY, circleSize, canvas.height);
+        ctx.restore();
+
+        // Draw the uploaded image if available
+        if (uploadedImage) {
+          var img = new Image();
+          img.src = uploadedImage;
+          img.onload = function () {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(
+              circleX + circleRadius,
+              circleY + circleRadius,
+              circleRadius,
+              0,
+              2 * Math.PI
+            );
+            ctx.clip();
+            ctx.drawImage(img, circleX, circleY, circleSize, circleSize);
+            ctx.restore();
+
+            // Draw the gradient box
+            var gradientBox = ctx.createLinearGradient(
+              0,
+              750,
+              canvas.width,
+              1000
+            );
+            gradientBox.addColorStop(0, "#ffc60a"); // Starting color
+            gradientBox.addColorStop(1, "#019849"); // Ending color
+            ctx.fillStyle = gradientBox;
+            ctx.fillRect(0, 750, canvas.width, 250); // Position and height
+
+            // Draw the text
+            ctx.font = "700 85px Arial";
+            ctx.fillStyle = "#ffffff"; // White color
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("SJB Api", canvas.width / 2, 820);
+          };
+        } else {
+          // Draw the gradient box if no image is uploaded
+          if (showGradientBox) {
+            var gradientBox = ctx.createLinearGradient(
+              0,
+              750,
+              canvas.width,
+              1000
+            );
+            gradientBox.addColorStop(0, "#ffc60a"); // Starting color
+            gradientBox.addColorStop(1, "#019849"); // Ending color
+            ctx.fillStyle = gradientBox;
+            ctx.fillRect(0, 750, canvas.width, 250); // Position and height
+          }
+
+          // Draw the text
+          ctx.font = "700 85px Arial";
+          ctx.fillStyle = "#ffffff"; // White color
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("SJB Api", canvas.width / 2, 820);
+        }
+
+        // Draw the first gradient box
+        var box750Gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+        box750Gradient.addColorStop(0, "#ffc60a"); // Starting color
+        box750Gradient.addColorStop(1, "#019849"); // Ending color
+        ctx.fillStyle = box750Gradient;
+        ctx.fillRect(0, 750, canvas.width, 150);
+
+        // Draw the second gradient box as the topmost layer
+        var box850Gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+        box850Gradient.addColorStop(0, "#ffc60a"); // Starting color
+        box850Gradient.addColorStop(1, "#019849"); // Ending color
+        ctx.fillStyle = box850Gradient;
+        ctx.fillRect(0, 850, canvas.width, 150);
+
+        // Draw the text "SJB Api" in front of the red gradient box
+        ctx.font = "700 85px Arial";
+        ctx.fillStyle = "#ffffff"; // White color
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("SJB Api", canvas.width / 2, 820);
+      }
+
+      function syncBackgroundColor() {
+        var backgroundColor = document.getElementById("backgroundColor").value;
+        drawOnCanvas(backgroundColor);
+      }
+
+      function handleImageUpload() {
+        var fileInput = document.getElementById("imageUpload");
+        var file = fileInput.files[0];
+        if (file) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            uploadedImage = e.target.result;
+            drawOnCanvas(undefined, true); // Pass true to show the gradient box
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function downloadImage() {
+        let canvas = document.getElementById("myCanvas");
+        let format = "png"; // Default to PNG, change this to "jpg" if needed
+        let mimeType = `image/${format === "jpg" ? "jpeg" : format}`;
+        let dataURL = canvas.toDataURL(mimeType);
+
+        let a = document.createElement("a");
+        a.href = dataURL;
+        a.download = `canvas_image.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      function makeDraggable(element) {
+        let offsetX,
+          offsetY,
+          isDragging = false;
+
+        element.addEventListener("mousedown", (e) => {
+          isDragging = true;
+          offsetX = e.clientX - element.getBoundingClientRect().left;
+          offsetY = e.clientY - element.getBoundingClientRect().top;
+          document.addEventListener("mousemove", onMouseMove);
+          document.addEventListener("mouseup", onMouseUp);
+        });
+
+        function onMouseMove(e) {
+          if (isDragging) {
+            let x = e.clientX - offsetX;
+            let y = e.clientY - offsetY;
+            element.style.left = `${x}px`;
+            element.style.top = `${y}px`;
+          }
+        }
+
+        function onMouseUp() {
+          isDragging = false;
+          document.removeEventListener("mousemove", onMouseMove);
+          document.removeEventListener("mouseup", onMouseUp);
+        }
+      }
+
+      window.addEventListener("load", () => {
+        drawOnCanvas();
+        let formContainer = document.querySelector(".form-container");
+        makeDraggable(formContainer);
+      });
+
+      let backgroundColorInput = document.getElementById("backgroundColor");
+      backgroundColorInput.addEventListener("input", syncBackgroundColor);
+
+      let imageUploadInput = document.getElementById("imageUpload");
+      imageUploadInput.addEventListener("change", handleImageUpload);
+
+      let downloadBtn = document.getElementById("downloadBtn");
+      downloadBtn.addEventListener("click", downloadImage);
+    </script>
+  </body>
+</html>

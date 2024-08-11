@@ -1,0 +1,66 @@
+body {
+    font-family: 'Helvetica Neue', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+header .logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.nav-link {
+    color: #000;
+    margin-right: 15px;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.nav-link:hover {
+    color: #007bff;
+}
+
+h1 {
+    font-size: 48px;
+    font-weight: bold;
+    letter-spacing: -1px;
+}
+
+h2 {
+    font-size: 32px;
+    margin-top: 20px;
+}
+
+h3 {
+    font-size: 24px;
+    margin-top: 10px;
+}
+
+p {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.btn-dark {
+    background-color: #000;
+    border-color: #000;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.container img {
+    border-radius: 10px;
+}
+
+.form-select {
+    width: auto;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.search-icon i {
+    font-size: 18px;
+    color: #000;
+}
